@@ -220,7 +220,7 @@ def web_search(state):
 
     print("---WEB SEARCH---")
     question = state["question"]
-    documents = state["documents"]
+    documents = state["documents"] if "documents" in state.keys() else []
 
     # Web search
     docs = TavilySearchResults(k=3).invoke({"query": question})
@@ -376,7 +376,8 @@ if __name__ == "__main__":
     # Test
     from pprint import pprint
 
-    inputs = {"question": "What are the types of agent memory?"}
+    # What are the types of agent memory?
+    inputs = {"question": "What stocks should I invest in? Should I diversify if I want short-term gains?"}
     for output in app.stream(inputs):
         for key, value in output.items():
             pprint(f"Finished running: {key}:")
