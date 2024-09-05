@@ -17,9 +17,6 @@ RUN apt-get update && \
 # Set the working directory
 WORKDIR /usr/local/app
 
-# # Set Python 3.10 as the default version
-# RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
-
 COPY requirements.txt ./
 
 # Upgrade pip

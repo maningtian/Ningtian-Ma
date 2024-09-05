@@ -1,7 +1,6 @@
-python code/stockformer/train.py \
+python3 code/stockformer/train.py \
 --prediction_length 30 \
 --stride 15 \
---end_date 2024-07-20 \
 --batch_size 1024 \
 --num_epochs 100 \
 --lr 5e-5 \
@@ -13,5 +12,5 @@ python code/stockformer/train.py \
 --decoder_attention_heads 16 \
 --encoder_ffn_dim 64 \
 --decoder_ffn_dim 64 \
---save_name sp500-30d-300 \
-> logs/sp500-30d-300.txt
+--save_name sp500-30d-100 \
+> logs/sp500-30d-100.txt

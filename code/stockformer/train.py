@@ -352,7 +352,7 @@ def main():
         model = torch.nn.DataParallel(model, device_ids=args.device_ids)
 
     print('\nStarting Training...')
-    train(model, config, train_dataset, val_dataset, args.save_name)
+    # train(model, config, train_dataset, val_dataset, args.save_name)
 
     if args.save_name:
         print(f'\nSaving Model to {args.save_name}')
