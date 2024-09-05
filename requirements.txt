@@ -3,10 +3,12 @@ numpy
 pandas
 yfinance
 gluonts
-matplotlib
 torch
 transformers
 tqdm
+tiktoken
+chromadb
+langgraph
 langchain
 langchain_community
-langgraph
+langchain_nvidia_ai_endpoints

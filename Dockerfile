@@ -18,24 +18,30 @@ RUN apt-get update && \
 WORKDIR /usr/local/app
 
 # Create the cache directory
-RUN mkdir -p cache
+RUN mkdir -p hf_cache
+
+# Set ownership and permissions for writeable directories
+RUN useradd app
+RUN chown app:app hf_cache
+RUN chmod 700 hf_cache
 
 # Set environment variables
-ENV TRANSFORMERS_CACHE=/usr/local/app/cache
-
-COPY requirements.txt ./
+ENV HF_HOME=/usr/local/app/hf_cache
 
 # Upgrade pip
 RUN python3 -m pip install --upgrade pip
 
+# Copy only the requirements file first, to leverage Docker caching
+COPY requirements.txt ./
+
 # Install project dependencies
 RUN python3 -m pip install -r requirements.txt
 
+# Copy the rest of the project files
 COPY code ./code
 COPY data ./data
 COPY models ./models
 
-RUN useradd app
 USER app
 
 # CMD ["nvidia-smi"]

@@ -2,8 +2,117 @@ import os
 from typing import List
 from typing_extensions import TypedDict
 from langchain.schema import Document
+from langchain.prompts import PromptTemplate
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_community.vectorstores import Chroma
 from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings, ChatNVIDIA
 from langgraph.graph import END, StateGraph
+
+
+model_id = "meta/llama3-70b-instruct"
+
+urls = [
+    "https://lilianweng.github.io/posts/2023-06-23-agent/",
+    "https://lilianweng.github.io/posts/2023-03-15-prompt-engineering/",
+    "https://lilianweng.github.io/posts/2023-10-25-adv-attack-llm/",
+]
+
+docs = [WebBaseLoader(url).load() for url in urls]
+docs_list = [item for sublist in docs for item in sublist]
+
+text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+    chunk_size=250, chunk_overlap=0
+)
+doc_splits = text_splitter.split_documents(docs_list)
+
+# Add to vectorDB
+vectorstore = Chroma.from_documents(
+    documents=doc_splits,
+    collection_name="rag-chroma",
+    embedding=NVIDIAEmbeddings(model='NV-Embed-QA'),
+)
+retriever = vectorstore.as_retriever()
+
+
+# RETRIEVAL GRADER
+prompt = PromptTemplate(
+    template="""<|begin_of_text|><|start_header_id|>system<|end_header_id|> You are a grader assessing relevance 
+    of a retrieved document to a user question. If the document contains keywords related to the user question, 
+    grade it as relevant. It does not need to be a stringent test. The goal is to filter out erroneous retrievals. \n
+    Give a binary score 'yes' or 'no' score to indicate whether the document is relevant to the question. \n
+    Provide the binary score as a JSON with a single key 'score' and no premable or explanation.
+     <|eot_id|><|start_header_id|>user<|end_header_id|>
+    Here is the retrieved document: \n\n {document} \n\n
+    Here is the user question: {question} \n <|eot_id|><|start_header_id|>assistant<|end_header_id|>
+    """,
+    input_variables=["question", "document"],
+)
+llm = ChatNVIDIA(model=model_id, temperature=0)
+retrieval_grader = prompt | llm | JsonOutputParser()
+
+
+# ASSISTANT MODEL
+prompt = PromptTemplate(
+    template="""<|begin_of_text|><|start_header_id|>system<|end_header_id|> You are an assistant for question-answering tasks. 
+    Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. 
+    Use three sentences maximum and keep the answer concise <|eot_id|><|start_header_id|>user<|end_header_id|>
+    Question: {question} 
+    Context: {context} 
+    Answer: <|eot_id|><|start_header_id|>assistant<|end_header_id|>""",
+    input_variables=["question", "document"],
+)
+llm = ChatNVIDIA(model=model_id, temperature=0)
+rag_chain = prompt | llm | StrOutputParser()
+
+
+# HALLUCINATION GRADER
+prompt = PromptTemplate(
+    template=""" <|begin_of_text|><|start_header_id|>system<|end_header_id|> You are a grader assessing whether 
+    an answer is grounded in / supported by a set of facts. Give a binary 'yes' or 'no' score to indicate 
+    whether the answer is grounded in / supported by a set of facts. Provide the binary score as a JSON with a 
+    single key 'score' and no preamble or explanation. <|eot_id|><|start_header_id|>user<|end_header_id|>
+    Here are the facts:
+    \n ------- \n
+    {documents} 
+    \n ------- \n
+    Here is the answer: {generation}  <|eot_id|><|start_header_id|>assistant<|end_header_id|>""",
+    input_variables=["generation", "documents"],
+)
+llm = ChatNVIDIA(model=model_id, temperature=0)
+hallucination_grader = prompt | llm | JsonOutputParser()
+
+
+# ANSWER GRADER
+prompt = PromptTemplate(
+    template="""<|begin_of_text|><|start_header_id|>system<|end_header_id|> You are a grader assessing whether an 
+    answer is useful to resolve a question. Give a binary score 'yes' or 'no' to indicate whether the answer is 
+    useful to resolve a question. Provide the binary score as a JSON with a single key 'score' and no preamble or explanation.
+     <|eot_id|><|start_header_id|>user<|end_header_id|> Here is the answer:
+    \n ------- \n
+    {generation} 
+    \n ------- \n
+    Here is the question: {question} <|eot_id|><|start_header_id|>assistant<|end_header_id|>""",
+    input_variables=["generation", "question"],
+)
+llm = ChatNVIDIA(model=model_id, temperature=0)
+answer_grader = prompt | llm | JsonOutputParser()
+
+
+# QUESTION ROUTER
+prompt = PromptTemplate(
+    template="""<|begin_of_text|><|start_header_id|>system<|end_header_id|> You are an expert at routing a 
+    user question to a vectorstore or web search. Use the vectorstore for questions on LLM  agents, 
+    prompt engineering, and adversarial attacks. You do not need to be stringent with the keywords 
+    in the question related to these topics. Otherwise, use web-search. Give a binary choice 'web_search' 
+    or 'vectorstore' based on the question. Return the a JSON with a single key 'datasource' and 
+    no premable or explanation. Question to route: {question} <|eot_id|><|start_header_id|>assistant<|end_header_id|>""",
+    input_variables=["question"],
+)
+llm = ChatNVIDIA(model=model_id, temperature=0)
+question_router = prompt | llm | JsonOutputParser()
 
 
 # STATE
@@ -261,17 +370,14 @@ def build_knowledge_graph():
 
 
 if __name__ == "__main__":
-    print(os.environ.get("HUGGINGFACE_HUB_TOKEN", ""))
-    print(os.environ.get("NVIDIA_API_KEY", ""))
-    print(os.environ.get("TAVILY_API_KEY", ""))
-    # workflow = build_knowledge_graph()
-    # app = workflow.compile()
+    workflow = build_knowledge_graph()
+    app = workflow.compile()
 
-    # # Test
-    # from pprint import pprint
+    # Test
+    from pprint import pprint
 
-    # inputs = {"question": "What are the types of agent memory?"}
-    # for output in app.stream(inputs):
-    #     for key, value in output.items():
-    #         pprint(f"Finished running: {key}:")
-    # pprint(value["generation"])
+    inputs = {"question": "What are the types of agent memory?"}
+    for output in app.stream(inputs):
+        for key, value in output.items():
+            pprint(f"Finished running: {key}:")
+    pprint(value["generation"])
