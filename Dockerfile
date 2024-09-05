@@ -17,6 +17,15 @@ RUN apt-get update && \
 # Set the working directory
 WORKDIR /usr/local/app
 
+# Upgrade pip
+RUN python3 -m pip install --upgrade pip
+
+# Copy only the requirements file first, to leverage Docker caching
+COPY requirements.txt ./
+
+# Install project dependencies
+RUN python3 -m pip install -r requirements.txt
+
 # Create the cache directory
 RUN mkdir -p hf_cache
 
@@ -28,19 +37,10 @@ RUN chmod 700 hf_cache
 # Set environment variables
 ENV HF_HOME=/usr/local/app/hf_cache
 
-# Upgrade pip
-RUN python3 -m pip install --upgrade pip
-
-# Copy only the requirements file first, to leverage Docker caching
-COPY requirements.txt ./
-
-# Install project dependencies
-RUN python3 -m pip install -r requirements.txt
-
 # Copy the rest of the project files
-COPY code ./code
 COPY data ./data
 COPY models ./models
+COPY code ./code
 
 USER app
 
