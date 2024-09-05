@@ -1,3 +1,12 @@
 jupyterlab>3.0
 numpy
 pandas
+yfinance
+gluonts
+matplotlib
+torch
+transformers
+tqdm
+langchain
+langchain_community
+langgraph
