@@ -17,6 +17,12 @@ RUN apt-get update && \
 # Set the working directory
 WORKDIR /usr/local/app
 
+# Create the cache directory
+RUN mkdir -p cache
+
+# Set environment variables
+ENV TRANSFORMERS_CACHE=/usr/local/app/cache
+
 COPY requirements.txt ./
 
 # Upgrade pip

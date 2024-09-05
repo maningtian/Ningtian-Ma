@@ -12,10 +12,16 @@ Portfolia also provides a feature for forecasting any given stock with high cert
 
 We use a custom Docker image for this project:
 
-`docker build -t portfolia .`
+```bash
+docker build -t portfolia .
+```
+
+
 
 To run the container using the image from above:
 
-`docker run --gpus all --rm -it -e HUGGINGFACE_HUB_TOKEN=$HUGGINGFACE_HUB_TOKEN -e NVIDIA_API_KEY=$NVIDIA_API_KEY -e TAVILY_API_KEY=$TAVILY_API_KEY portfolia python3 code/test.py`
+```bash
+docker run --gpus all --rm -it -e HUGGINGFACE_HUB_TOKEN=$HUGGINGFACE_HUB_TOKEN -e NVIDIA_API_KEY=$NVIDIA_API_KEY -e TAVILY_API_KEY=$TAVILY_API_KEY portfolia python3 code/test.py
+```
 
 Optional section to summarize important steps and how to use the project & apps in the project
