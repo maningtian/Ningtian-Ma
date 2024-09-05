@@ -1,3 +1,7 @@
+
+Example training command:
+
+```bash
 python3 code/stockformer/train.py \
 --prediction_length 30 \
 --stride 15 \
@@ -12,5 +16,5 @@ python3 code/stockformer/train.py \
 --decoder_attention_heads 16 \
 --encoder_ffn_dim 64 \
 --decoder_ffn_dim 64 \
---save_name sp500-30d-100 \
-> logs/sp500-30d-100.txt
+--save_name <NAME_FOR_MODEL>
+```

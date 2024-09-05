@@ -1,6 +1,6 @@
 # Portfolia - A Personalized Assistant for Financial Advising and Asset Management
 
-Many people get into the world of finance and are blown away by the sheer number of details and key words that they need to learn about when dealing with investments and stocks. Like what are ETF's? What are dividends? A lot of these questions can be answered with Portfolia, a personalized investment advisor. 
+Many people get into the world of finance and are blown away by the sheer number of details and key words that they need to learn about when dealing with investments and stocks. Like what are ETF's? What are dividends? A lot of these questions can be answered with Portfolia, a personalized investment advisor.
 
 ## Description
 
@@ -16,6 +16,6 @@ We use a custom Docker image for this project:
 
 To run the container using the image from above:
 
-`docker run --gpus all --rm -it portfolia python3 code/test.py`
+`docker run --gpus all --rm -it -e HUGGINGFACE_HUB_TOKEN=$HUGGINGFACE_HUB_TOKEN -e NVIDIA_API_KEY=$NVIDIA_API_KEY -e TAVILY_API_KEY=$TAVILY_API_KEY portfolia python3 code/test.py`
 
 Optional section to summarize important steps and how to use the project & apps in the project
