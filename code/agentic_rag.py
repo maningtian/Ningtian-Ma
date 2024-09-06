@@ -12,29 +12,63 @@ from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings, ChatNVIDIA
 from langgraph.graph import END, StateGraph
 
 
-model_id = "meta/llama3-70b-instruct"
+BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+MODEL_ID = "meta/llama3-70b-instruct"
 
-urls = [
-    "https://lilianweng.github.io/posts/2023-06-23-agent/",
-    "https://lilianweng.github.io/posts/2023-03-15-prompt-engineering/",
-    "https://lilianweng.github.io/posts/2023-10-25-adv-attack-llm/",
-]
 
-docs = [WebBaseLoader(url).load() for url in urls]
-docs_list = [item for sublist in docs for item in sublist]
+def load_documents():
+    docs = []
+    folder_path = os.path.join(BASE_PATH, 'data/docs')
+    for filename in os.listdir(folder_path):
+        if filename.endswith('.txt'):
+            file_path = os.path.join(folder_path, filename)
+            with open(file_path, 'r') as f:
+                text = f.read()
+                docs.append(Document(page_content=text, metadata={'source': filename}))
+    return docs
+
 
 text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
     chunk_size=250, chunk_overlap=0
 )
-doc_splits = text_splitter.split_documents(docs_list)
-
-# Add to vectorDB
+doc_splits = text_splitter.split_documents(load_documents())
 vectorstore = Chroma.from_documents(
     documents=doc_splits,
     collection_name="rag-chroma",
     embedding=NVIDIAEmbeddings(model='NV-Embed-QA'),
 )
 retriever = vectorstore.as_retriever()
+
+
+# ASSISTANT MODEL
+prompt = PromptTemplate(
+    template="""<|begin_of_text|><|start_header_id|>system<|end_header_id|> You are a confident, helpful assistant for financial 
+    advicing and investment management question-answering tasks. Use the following pieces of retrieved context to answer the 
+    question. Be confident and clearly tell the user what the answer is. If you don't know the answer, just say that you don't know. 
+    If the question is about a specific stock, at the very end of your response, return a JSON with a two keys. The first being 
+    `symbol` which is the trading symbol of the stock and the second key `decision` with a choice of `buy` or `hold` or `sell` with 
+    no preamble.<|eot_id|><|start_header_id|>user<|end_header_id|>
+    Question: {question} 
+    Context: {context} 
+    Answer: <|eot_id|><|start_header_id|>assistant<|end_header_id|>""",
+    input_variables=["question", "document"],
+)
+llm = ChatNVIDIA(model=MODEL_ID, temperature=0)
+rag_chain = prompt | llm | StrOutputParser()
+
+
+# QUESTION ROUTER
+prompt = PromptTemplate(
+    template="""<|begin_of_text|><|start_header_id|>system<|end_header_id|> You are an expert at routing a 
+    user question to a vectorstore or web search. Use the vectorstore for questions on LLM  agents, 
+    prompt engineering, and adversarial attacks. You do not need to be stringent with the keywords 
+    in the question related to these topics. Otherwise, use web-search. Give a binary choice 'web_search' 
+    or 'vectorstore' based on the question. Return the JSON with a single key 'datasource' and no preamble
+    or explanation. Question to route: {question} <|eot_id|><|start_header_id|>assistant<|end_header_id|>""",
+    input_variables=["question"],
+)
+llm = ChatNVIDIA(model=MODEL_ID, temperature=0)
+question_router = prompt | llm | JsonOutputParser()
 
 
 # RETRIEVAL GRADER
@@ -50,22 +84,8 @@ prompt = PromptTemplate(
     """,
     input_variables=["question", "document"],
 )
-llm = ChatNVIDIA(model=model_id, temperature=0)
+llm = ChatNVIDIA(model=MODEL_ID, temperature=0)
 retrieval_grader = prompt | llm | JsonOutputParser()
-
-
-# ASSISTANT MODEL
-prompt = PromptTemplate(
-    template="""<|begin_of_text|><|start_header_id|>system<|end_header_id|> You are an assistant for question-answering tasks. 
-    Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. 
-    Use three sentences maximum and keep the answer concise <|eot_id|><|start_header_id|>user<|end_header_id|>
-    Question: {question} 
-    Context: {context} 
-    Answer: <|eot_id|><|start_header_id|>assistant<|end_header_id|>""",
-    input_variables=["question", "document"],
-)
-llm = ChatNVIDIA(model=model_id, temperature=0)
-rag_chain = prompt | llm | StrOutputParser()
 
 
 # HALLUCINATION GRADER
@@ -81,7 +101,7 @@ prompt = PromptTemplate(
     Here is the answer: {generation}  <|eot_id|><|start_header_id|>assistant<|end_header_id|>""",
     input_variables=["generation", "documents"],
 )
-llm = ChatNVIDIA(model=model_id, temperature=0)
+llm = ChatNVIDIA(model=MODEL_ID, temperature=0)
 hallucination_grader = prompt | llm | JsonOutputParser()
 
 
@@ -97,22 +117,8 @@ prompt = PromptTemplate(
     Here is the question: {question} <|eot_id|><|start_header_id|>assistant<|end_header_id|>""",
     input_variables=["generation", "question"],
 )
-llm = ChatNVIDIA(model=model_id, temperature=0)
+llm = ChatNVIDIA(model=MODEL_ID, temperature=0)
 answer_grader = prompt | llm | JsonOutputParser()
-
-
-# QUESTION ROUTER
-prompt = PromptTemplate(
-    template="""<|begin_of_text|><|start_header_id|>system<|end_header_id|> You are an expert at routing a 
-    user question to a vectorstore or web search. Use the vectorstore for questions on LLM  agents, 
-    prompt engineering, and adversarial attacks. You do not need to be stringent with the keywords 
-    in the question related to these topics. Otherwise, use web-search. Give a binary choice 'web_search' 
-    or 'vectorstore' based on the question. Return the a JSON with a single key 'datasource' and 
-    no premable or explanation. Question to route: {question} <|eot_id|><|start_header_id|>assistant<|end_header_id|>""",
-    input_variables=["question"],
-)
-llm = ChatNVIDIA(model=model_id, temperature=0)
-question_router = prompt | llm | JsonOutputParser()
 
 
 # STATE
@@ -132,6 +138,32 @@ class GraphState(TypedDict):
     documents: List[str]
 
 # NODES
+def web_search(state):
+    """
+    Web search based based on the question
+
+    Args:
+        state (dict): The current graph state
+
+    Returns:
+        state (dict): Appended web results to documents
+    """
+
+    print("---WEB SEARCH---")
+    question = state["question"]
+    documents = state["documents"] if "documents" in state.keys() else []
+
+    # Web search
+    docs = TavilySearchResults(k=3).invoke({"query": question})
+    web_results = "\n".join([d["content"] for d in docs])
+    web_results = Document(page_content=web_results)
+    if documents is not None:
+        documents.append(web_results)
+    else:
+        documents = [web_results]
+    return {"documents": documents, "question": question}
+
+
 def retrieve(state):
     """
     Retrieve documents from vectorstore
@@ -148,25 +180,6 @@ def retrieve(state):
     # Retrieval
     documents = retriever.invoke(question)
     return {"documents": documents, "question": question}
-
-
-def generate(state):
-    """
-    Generate answer using RAG on retrieved documents
-
-    Args:
-        state (dict): The current graph state
-
-    Returns:
-        state (dict): New key added to state, generation, that contains LLM generation
-    """
-    print("---GENERATE---")
-    question = state["question"]
-    documents = state["documents"]
-
-    # RAG generation
-    generation = rag_chain.invoke({"context": documents, "question": question})
-    return {"documents": documents, "question": question, "generation": generation}
 
 
 def grade_documents(state):
@@ -207,30 +220,23 @@ def grade_documents(state):
     return {"documents": filtered_docs, "question": question, "web_search": web_search}
 
 
-def web_search(state):
+def generate(state):
     """
-    Web search based based on the question
+    Generate answer using RAG on retrieved documents
 
     Args:
         state (dict): The current graph state
 
     Returns:
-        state (dict): Appended web results to documents
+        state (dict): New key added to state, generation, that contains LLM generation
     """
-
-    print("---WEB SEARCH---")
+    print("---GENERATE---")
     question = state["question"]
-    documents = state["documents"] if "documents" in state.keys() else []
+    documents = state["documents"]
 
-    # Web search
-    docs = TavilySearchResults(k=3).invoke({"query": question})
-    web_results = "\n".join([d["content"] for d in docs])
-    web_results = Document(page_content=web_results)
-    if documents is not None:
-        documents.append(web_results)
-    else:
-        documents = [web_results]
-    return {"documents": documents, "question": question}
+    # RAG generation
+    generation = rag_chain.invoke({"context": documents, "question": question})
+    return {"documents": documents, "question": question, "generation": generation}
 
 
 # CONDITIONAL EDGE
@@ -374,10 +380,21 @@ if __name__ == "__main__":
     app = workflow.compile()
 
     # Test
+    import argparse
     from pprint import pprint
 
+    parser = argparse.ArgumentParser(description="Ask a question.")
+    parser.add_argument(
+        "-q",
+        "--question",
+        required=True,
+        type=str,
+        help="The question to be answered"
+    )
+    args = parser.parse_args()
+
     # What are the types of agent memory?
-    inputs = {"question": "What stocks should I invest in? Should I diversify if I want short-term gains?"}
+    inputs = {"question": args.question}
     for output in app.stream(inputs):
         for key, value in output.items():
             pprint(f"Finished running: {key}:")
