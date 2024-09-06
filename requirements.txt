@@ -1,14 +1,15 @@
 jupyterlab>3.0
 numpy
 pandas
+flask
+chromadb
+requests
 yfinance
 gluonts
 torch
 transformers
 tqdm
 tiktoken
-chromadb
-flask
 langgraph
 langchain
 langchain_community

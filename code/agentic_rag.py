@@ -42,22 +42,24 @@ retriever = vectorstore.as_retriever()
 # ASSISTANT MODEL
 prompt = PromptTemplate(
     template="""<|begin_of_text|><|start_header_id|>system<|end_header_id|> You are a personalized assistant for 
-    financial advicing and investment management question-answering tasks. Use the following pieces of retrieved 
-    context from documents to formulate a detailed answer without preluding that you used the provided context. 
-    Be helpful and confident and clearly state your answer. Additionally use the user context for tailoring a 
-    personalized financial plan that matches the user's investor personality without stating information from the 
-    user context. If the question asks about predicting a specific stock, at the end of your response, return a 
-    JSON with three keys and no preamble/explanation. The first key is `symbol` which is the trading symbol of 
-    the stock and the second being `decision` with a choice of `buy`, `hold`, or `sell`. The last key is 'days' 
-    which is an integer value representing the number of days to predict this stock for (default value is `30` if 
-    not presented in the question).<|eot_id|><|start_header_id|>user<|end_header_id|>
+    financial advicing and investment management question-answering tasks for me. Use the following 
+    context from retrieved documents to formulate a detailed and accurate answer without preluding that you used 
+    the provided context. Also use the following statements from the user context to develop a deep understanding 
+    of the my mindset for tailoring relevant financial plans that matches the my investor personality. Be helpful 
+    and confident and clearly state your answer. If the question asks about predicting a specific stock, at the 
+    end of your response, return a JSON with three keys and no preamble/explanation. The first key is `symbol` 
+    which is the trading symbol of the stock. The second being `decision` with a choice of `buy`, `hold`, or `sell`. 
+    The last key is 'days' which is an integer value representing the number of days to predict this stock for 
+    (default value is `0` if not mentioned in the question).<|eot_id|><|start_header_id|>user<|end_header_id|>
     Question: {question} 
-    User Context: Building wealth at the expense of my current lifestyle best reflects my wealth goals. I would 
-    prefer to maintain control over my own investments over delegating that responsibility to somebody else. My 
-    desire to preserve wealth is stronger than my tolerance for risk to build wealth. I would take a 50/50 chance 
-    of either doubling my income or halfing my income. In my work and personal life when something needs to be done, 
-    I generally prefer taking initiative rather than taking directions. I believe in the idea of borrowing money to make money.
-    Context: {context} 
+    User Context: The following statements aim to provide an understanding of the user's investor personality (do not 
+    take it literally, these are hypothetical statements to assess personality). Building wealth at the expense of my 
+    current lifestyle best reflects my wealth goals. I would prefer to maintain control over my own investments over 
+    delegating that responsibility to somebody else. My desire to preserve wealth is stronger than my tolerance for 
+    risk to build wealth. I would take a 50/50 chance of either doubling my income or halfing my income. In my work 
+    and personal life when something needs to be done, I generally prefer taking initiative rather than taking 
+    directions. I believe in the idea of borrowing money to make money.
+    Retrieved Documents: {context} 
     Answer: <|eot_id|><|start_header_id|>assistant<|end_header_id|>""",
     input_variables=["question", "document"],
 )
@@ -402,7 +404,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     inputs = {"question": args.question}
-    for output in app.stream(inputs):
-        for key, value in output.items():
+    output = []
+    for out in app.stream(inputs):
+        for key, value in out.items():
             pprint(f"Finished running: {key}:")
     pprint(value["generation"])
