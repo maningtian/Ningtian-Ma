@@ -8,6 +8,7 @@ transformers
 tqdm
 tiktoken
 chromadb
+flask
 langgraph
 langchain
 langchain_community

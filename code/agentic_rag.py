@@ -45,11 +45,12 @@ prompt = PromptTemplate(
     financial advicing and investment management question-answering tasks. Use the following pieces of retrieved 
     context from documents to formulate a detailed answer without preluding that you used the provided context. 
     Be helpful and confident and clearly state your answer. Additionally use the user context for tailoring a 
-    personalized financial plan that matches the user's investor personality without repeating their personality 
-    information in the answer. If the question asks about a specific stock, at the very end of your response, 
-    return a JSON with two keys. The first being `symbol` which is the trading symbol of the stock and the second 
-    key `decision` with a choice of `buy` or `hold` or `sell` with no preamble.
-    <|eot_id|><|start_header_id|>user<|end_header_id|>
+    personalized financial plan that matches the user's investor personality without stating information from the 
+    user context. If the question asks about predicting a specific stock, at the end of your response, return a 
+    JSON with three keys and no preamble/explanation. The first key is `symbol` which is the trading symbol of 
+    the stock and the second being `decision` with a choice of `buy`, `hold`, or `sell`. The last key is 'days' 
+    which is an integer value representing the number of days to predict this stock for (default value is `30` if 
+    not presented in the question).<|eot_id|><|start_header_id|>user<|end_header_id|>
     Question: {question} 
     User Context: Building wealth at the expense of my current lifestyle best reflects my wealth goals. I would 
     prefer to maintain control over my own investments over delegating that responsibility to somebody else. My 
