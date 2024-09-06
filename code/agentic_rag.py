@@ -386,6 +386,18 @@ def build_rag_pipeline():
     return workflow
 
 
+def ask(rag_agents, question):
+    inputs = {"question": question}
+    failure_count = 0
+    for out in rag_agents.stream(inputs):
+        for key, value in out.items():
+            if key == 'generate':
+                failure_count += 1
+            if failure_count > 2:
+                return "I am sorry. I am having trouble with that. Please try again."
+    return value["generation"]
+
+
 import argparse
 from pprint import pprint
 
@@ -405,9 +417,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     inputs = {"question": args.question}
-    outputs = []
     for out in rag_agents.stream(inputs):
         for key, value in out.items():
-            outputs.append(key)
             pprint(f"Finished running: {key}:")
     pprint(value["generation"])
