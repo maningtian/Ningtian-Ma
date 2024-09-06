@@ -1,4 +1,4 @@
-# Portfolia - A Personalized Assistant for Financial Advising and Asset Management
+# Portfolia - A Personalized Assistant for Financial Advising and Investment Management
 
 Many people get into the world of finance and investment management and are taken aback by the sheer number of details and key words that they need to learn about when dealing with investments and stocks. What are ETF's? What are dividends? How can I diversify my portfolio? A lot of these questions can be answered with Portfolia, a personalized investment advisor.
 
