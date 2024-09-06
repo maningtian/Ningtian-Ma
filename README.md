@@ -8,7 +8,7 @@ Many people get into the world of finance and are blown away by the sheer number
 
 Portfolia also provides a feature for forecasting any given stock with high certainty. You can select a certain prediction length and Portfolia will forecast the stock and get back to you with its accurate predictions. If you would like to understand more about what happens under the hood, we leverage Time Series Transformers pre-trained on vast amounts of financial stock data for the S&P500 companies since 2004.
 
-## Getting Started
+## Before Getting Started
 In this repository, the folder `models` is too large for our Git LFS limit. Please click this `link` to download a zip file of `models` which you can add manually to this repository once cloned.
 
 The File Directory Structure of `models`:
@@ -35,7 +35,9 @@ The File Directory Structure of `models`:
 
 Due to unforeseen issues with the `nvwb start jupyterlab` Docker container not recognizing GPUs on our local machine during development, we decided to create our own custom Docker image which can recognize CUDA devices on the host machine. Details for running this application can be found below.
 
-1) Build a docker image with the Dockerfile present in the root directory of this repository.
+## Getting Started
+
+1) Build our docker image with the Dockerfile present in the root directory of this repository.
 
 **Note: This may take ~5 minutes to build*
 
