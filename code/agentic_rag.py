@@ -405,8 +405,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     inputs = {"question": args.question}
-    output = []
+    outputs = []
     for out in rag_agents.stream(inputs):
         for key, value in out.items():
+            outputs.append(key)
             pprint(f"Finished running: {key}:")
     pprint(value["generation"])
