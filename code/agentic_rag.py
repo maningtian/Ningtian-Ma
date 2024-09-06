@@ -13,7 +13,7 @@ from langgraph.graph import END, StateGraph
 
 
 BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-MODEL_ID = "meta/llama3-70b-instruct"
+MODEL_ID = "meta/llama-3.1-405b-instruct"
 
 
 def load_documents():
@@ -26,7 +26,6 @@ def load_documents():
                 text = f.read()
                 docs.append(Document(page_content=text, metadata={'source': filename}))
     return docs
-
 
 text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
     chunk_size=250, chunk_overlap=0
@@ -42,18 +41,26 @@ retriever = vectorstore.as_retriever()
 
 # ASSISTANT MODEL
 prompt = PromptTemplate(
-    template="""<|begin_of_text|><|start_header_id|>system<|end_header_id|> You are a confident, helpful assistant for financial 
-    advicing and investment management question-answering tasks. Use the following pieces of retrieved context to answer the 
-    question. Be confident and clearly tell the user what the answer is. If you don't know the answer, just say that you don't know. 
-    If the question is about a specific stock, at the very end of your response, return a JSON with a two keys. The first being 
-    `symbol` which is the trading symbol of the stock and the second key `decision` with a choice of `buy` or `hold` or `sell` with 
-    no preamble.<|eot_id|><|start_header_id|>user<|end_header_id|>
+    template="""<|begin_of_text|><|start_header_id|>system<|end_header_id|> You are a personalized assistant for 
+    financial advicing and investment management question-answering tasks. Use the following pieces of retrieved 
+    context from documents to formulate a detailed answer without preluding that you used the provided context. 
+    Be helpful and confident and clearly state your answer. Additionally use the user context for tailoring a 
+    personalized financial plan that matches the user's investor personality without repeating their personality 
+    information in the answer. If the question asks about a specific stock, at the very end of your response, 
+    return a JSON with two keys. The first being `symbol` which is the trading symbol of the stock and the second 
+    key `decision` with a choice of `buy` or `hold` or `sell` with no preamble.
+    <|eot_id|><|start_header_id|>user<|end_header_id|>
     Question: {question} 
+    User Context: Building wealth at the expense of my current lifestyle best reflects my wealth goals. I would 
+    prefer to maintain control over my own investments over delegating that responsibility to somebody else. My 
+    desire to preserve wealth is stronger than my tolerance for risk to build wealth. I would take a 50/50 chance 
+    of either doubling my income or halfing my income. In my work and personal life when something needs to be done, 
+    I generally prefer taking initiative rather than taking directions. I believe in the idea of borrowing money to make money.
     Context: {context} 
     Answer: <|eot_id|><|start_header_id|>assistant<|end_header_id|>""",
     input_variables=["question", "document"],
 )
-llm = ChatNVIDIA(model=MODEL_ID, temperature=0)
+llm = ChatNVIDIA(model=MODEL_ID, temperature=0.5)
 rag_chain = prompt | llm | StrOutputParser()
 
 
@@ -393,7 +400,6 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    # What are the types of agent memory?
     inputs = {"question": args.question}
     for output in app.stream(inputs):
         for key, value in output.items():
