@@ -1,7 +1,7 @@
 import os, sys
 from flask import Flask, request, jsonify
 from agentic_rag import *
-from code.stockformer.inference import init_config, init_model
+# from code.stockformer.inference import init_config, init_model
 
 
 app = Flask(__name__)
