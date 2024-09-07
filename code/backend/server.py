@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from ..agentic_rag import *
+from agentic_rag import *
 app = Flask(__name__)
 
 @app.route('/interact', methods=['GET', 'POST'])
@@ -11,7 +11,7 @@ def interact():
         workflow = build_rag_pipeline()
         rag_agents = workflow.compile()
         output = ask(rag_agents, question)
-        print(output)
+        print(str(output))
 
         # Dummy response for demonstration
         if question:

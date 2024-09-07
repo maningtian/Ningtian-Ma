@@ -12,7 +12,7 @@ from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings, ChatNVIDIA
 from langgraph.graph import END, StateGraph
 
 
-BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../'))
 MODEL_ID = "meta/llama-3.1-405b-instruct"
 
 
