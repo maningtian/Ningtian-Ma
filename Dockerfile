@@ -42,6 +42,8 @@ COPY data ./data
 COPY models ./models
 COPY code ./code
 
+EXPOSE 5000
+
 USER app
 
 # CMD ["nvidia-smi"]
