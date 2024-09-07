@@ -1,27 +1,34 @@
+import os, sys
 from flask import Flask, request, jsonify
 from agentic_rag import *
+from code.stockformer.inference import init_config, init_model
+
+
 app = Flask(__name__)
 
-@app.route('/interact', methods=['GET', 'POST'])
-def interact():
+@app.route('/chat', methods=['GET', 'POST'])
+def chat():
     if request.method == 'GET':
         # Retrieve query parameters from the request
         question = request.args.get('question', None)
+        if not question:
+            return jsonify({
+                "message": "Parameter [question] is None"
+            }), 400
 
         workflow = build_rag_pipeline()
         rag_agents = workflow.compile()
         output = ask(rag_agents, question)
-        print(str(output))
-
-        # Dummy response for demonstration
-        if question:
-            return jsonify({
-                "message": output
-            }), 200
-        else:
-            return jsonify({
-                "error": "Missing parameters"
-            }), 400
+        print(output)
+        # some function to convert output --> response, Optional[forecast]
+        response = output
+        forecast = None
+        return jsonify({
+            "message": response,
+            "symbol": None,
+            "decision": None,
+            "forecast": None,
+        })
 
     elif request.method == 'POST':
         # Retrieve JSON body parameters from the request
