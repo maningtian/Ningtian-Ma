@@ -1,6 +1,8 @@
 import os, sys
 from flask import Flask, request, jsonify
 from agentic_rag import *
+import json
+
 # from code.stockformer.inference import init_config, init_model
 
 
@@ -21,13 +23,32 @@ def chat():
         output = ask(rag_agents, question)
         print(output)
         # some function to convert output --> response, Optional[forecast]
+        # Need to fix what we search for. since itts not outputtin the "JSON" shit
+        current_string = output
+        if current_string.find("JSON:"):
+            result = current_string[current_string.find("JSON"):]
+        elif current_string.find("JSON"):
+            result = current_string[current_string.find("JSON"):]
+        else:
+            print("not found")
+        result = result[6:]
+        print("result:",result)
+
+        data = json.loads(result)
+
+        # parameters
+        stockName = data.get('symbol')
+        action = data.get('decision')
+        days = data.get('days')
+        print(stockName,action,days)
+
+
         response = output
-        forecast = None
         return jsonify({
             "message": response,
-            "symbol": None,
-            "decision": None,
-            "forecast": None,
+            "symbol": stockName,
+            "decision": action,
+            "forecast": days,
         })
 
     elif request.method == 'POST':

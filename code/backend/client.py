@@ -32,13 +32,13 @@ if __name__ == "__main__":
         print("GET Failed:", response.status_code)
 
 
-    # Make a POST request with the data
-    response = requests.post(chat_url, json=params)
+    # # Make a POST request with the data
+    # response = requests.post(chat_url, json=params)
 
-    # Print the response
-    if response.status_code == 200:
-        print("POST Success:", response.json())
-    else:
-        print("POST Failed:", response.status_code)
+    # # Print the response
+    # if response.status_code == 200:
+    #     print("POST Success:", response.json())
+    # else:
+    #     print("POST Failed:", response.status_code)
 
         
