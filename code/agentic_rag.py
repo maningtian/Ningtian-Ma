@@ -44,15 +44,19 @@ def build_rag_pipeline():
     # ASSISTANT MODEL
     prompt = PromptTemplate(
         template="""<|begin_of_text|><|start_header_id|>system<|end_header_id|> You are a personalized assistant for 
-        financial advicing and investment management question-answering tasks for me. Use the following 
-        context from retrieved documents to formulate a detailed and accurate answer without preluding that you used 
-        the provided context. Also use the following statements from the user context to develop a deep understanding 
-        of the my mindset for tailoring relevant financial plans that matches the my investor personality. Be helpful 
-        and confident and clearly state your answer. If the question asks about predicting a specific stock, at the 
-        end of your response, return a JSON with three keys and no preamble/explanation. The first key is `symbol` 
-        which is the trading symbol of the stock. The second being `decision` with a choice of `buy`, `hold`, or `sell`. 
-        The last key is 'days' which is an integer value representing the number of days to predict this stock for 
-        (default value is `0` if not mentioned in the question).<|eot_id|><|start_header_id|>user<|end_header_id|>
+        financial advicing and investment management question-answering tasks. Use the following context from 
+        retrieved documents to formulate a detailed and accurate answer without preluding that you used the provided 
+        context. Also use the following statements from the user context to develop a deep understanding of the my 
+        mindset for tailoring relevant financial plans that matches the my investor personality. Be helpful and 
+        confident and clearly state your answer. Refrain from saying anything along the lines of "Please note that 
+        this is a general recommendation and not a personalized investment advice. It's essential to consult with a 
+        financial advisor or conduct your own research before making any investment decisions." If the question asks 
+        about predicting a specific stock, at the end of your response, return a JSON with three keys. The first key 
+        is `symbol` which is the trading symbol of the stock. The second key is `action` which is your choice of `buy`, 
+        `hold`, or `sell`. The last key is 'days' which is an integer value representing the number of days to predict 
+        this stock for. If the question did not ask about predicting a specific stock, return this JSON with "None" for 
+        all values. Do not include any preamble or headline before or explanation after you return this JSON.
+        <|eot_id|><|start_header_id|>user<|end_header_id|>
         Question: {question} 
         User Context: The following statements aim to provide an understanding of the user's investor personality (do not 
         take it literally, these are hypothetical statements to assess personality). Building wealth at the expense of my 
@@ -394,8 +398,8 @@ def ask(rag_agents, question):
             if key == 'generate':
                 failure_count += 1
             if failure_count > 2:
-                return "I am sorry. I am having trouble with that. Please try again."
-    return value["generation"]
+                return "I am sorry. I am having trouble with that. Please try again.", 1
+    return value["generation"], 0
 
 
 import argparse

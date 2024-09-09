@@ -1,12 +1,11 @@
-import os, sys
+import os, sys, re, json
 from flask import Flask, request, jsonify
 from agentic_rag import *
-import json
-
-# from code.stockformer.inference import init_config, init_model
+from stockformer.inference import init_config, init_model
 
 
 app = Flask(__name__)
+
 
 @app.route('/chat', methods=['GET', 'POST'])
 def chat():
@@ -15,41 +14,37 @@ def chat():
         question = request.args.get('question', None)
         if not question:
             return jsonify({
-                "message": "Parameter [question] is None"
+                "message": "Missing parameter [question]"
             }), 400
 
         workflow = build_rag_pipeline()
         rag_agents = workflow.compile()
-        output = ask(rag_agents, question)
+        output, err = ask(rag_agents, question)
         print(output)
-        # some function to convert output --> response, Optional[forecast]
-        # Need to fix what we search for. since itts not outputtin the "JSON" shit
-        current_string = output
-        if current_string.find("JSON:"):
-            result = current_string[current_string.find("JSON"):]
-        elif current_string.find("JSON"):
-            result = current_string[current_string.find("JSON"):]
-        else:
-            print("not found")
-        result = result[6:]
-        print("result:",result)
 
-        data = json.loads(result)
+        packet = {
+            'message': output,
+            'symbol': None,
+            'action': None,
+            'forecast': None,
+        }
+        if err:
+            return jsonify(packet)
+        
+        pattern = r'{\s*"symbol"\s*:\s*"\w*"\s*,\s*"action"\s*:\s*"\w*"\s*,\s*"days":\s*"?\w*"?\s*}'
+        match = re.search(pattern, output)
+        if match:
+            json_string = match.group()
+            packet['message'] = output[:output.find(json_string)].strip()
+            try:
+                pred_json = json.loads(json_string)
+                packet['symbol'] = pred_json['symbol']
+                packet['action'] = pred_json['action']
+                packet['forecast'] = pred_json['days']
+            except json.JSONDecodeError as e:
+                print(f"Error decoding JSON: {e}")
 
-        # parameters
-        stockName = data.get('symbol')
-        action = data.get('decision')
-        days = data.get('days')
-        print(stockName,action,days)
-
-
-        response = output
-        return jsonify({
-            "message": response,
-            "symbol": stockName,
-            "decision": action,
-            "forecast": days,
-        })
+        return jsonify(packet)
 
     elif request.method == 'POST':
         # Retrieve JSON body parameters from the request
@@ -65,6 +60,7 @@ def chat():
                 "error": "Missing parameters"
             }), 400
 
+
 # @app.route('/sip', methods=['POST']) # Send Investor Personality = sip
 # def sip():
     
@@ -79,6 +75,7 @@ def chat():
 #         return jsonify({
 #             "error": "Missing parameters"
 #         }), 400
-    
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

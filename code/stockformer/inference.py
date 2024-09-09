@@ -7,8 +7,8 @@ import torch
 import torch.nn.functional as F
 from transformers import TimeSeriesTransformerForPrediction
 
-from config import StockformerConfig
-from data import InferenceStockDataset, fetch_yf_prices_for_inference, revert_preprocessing
+from stockformer.config import StockformerConfig
+from stockformer.data import InferenceStockDataset, fetch_yf_prices_for_inference, revert_preprocessing
 
 
 BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..'))

@@ -15,7 +15,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     # Define the API endpoint  
-    chat_url = 'http://127.0.0.1:5000/chat'
+    chat_url = 'http://localhost:5000/chat'
 
     # Define query parameters
     params = {
@@ -27,9 +27,15 @@ if __name__ == "__main__":
 
     # Print the response
     if response.status_code == 200:
-        print("GET Success:", response.json())
+        print('GET Success.')
+        packet = response.json()
+        print(packet['message'])
+        print(packet['symbol'])
+        print(packet['action'])
+        print(packet['forecast'])
     else:
-        print("GET Failed:", response.status_code)
+        print(f'GET Failed. Status Code: {response.status_code}')
+        print(response.json()['message'])
 
 
     # # Make a POST request with the data
