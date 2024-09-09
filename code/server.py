@@ -14,16 +14,25 @@ def log(msg):
 
 
 def packetify(output, packet):
-    pattern = r'{\s*"symbol"\s*:\s*"\w*"\s*,\s*"action"\s*:\s*"\w*"\s*,\s*"days":\s*"?\w*"?\s*}'
+    pattern = r'{\s*"symbols?"\s*:\s*"\w*"\s*,\s*"actions?"\s*:\s*"\w*"\s*,\s*"days?":\s*"?\w*"?\s*}'
     match = re.search(pattern, output)
     if match:
         json_string = match.group()
         packet['message'] = output[:output.find(json_string)].strip()
         try:
             pred_json = json.loads(json_string)
-            packet['symbol'] = pred_json['symbol']
-            packet['action'] = pred_json['action']
-            packet['forecast'] = pred_json['days']
+            try:
+                packet['symbol'] = pred_json['symbol']
+            except KeyError:
+                packet['symbol'] = pred_json['symbols']
+            try:
+                packet['action'] = pred_json['action']
+            except KeyError:
+                packet['action'] = pred_json['actions']
+            try:
+                packet['forecast'] = pred_json['days']
+            except KeyError:
+                packet['forecast'] = pred_json['day']
         except json.JSONDecodeError as e:
             print(f"Error decoding JSON: {e}")
     return packet
@@ -54,6 +63,12 @@ def chat():
             return jsonify(packet)
         
         packet = packetify(output, packet)
+        if packet['symbol'] != "None" and packet['action'] != "None" and isinstance(packet['forecast'], int):
+            prediction_length = min([5, 15, 30, 60, 90, 180, 365], key=lambda x: abs(x - packet['forecast']))
+            config = init_config(f"sp500-{prediction_length}d")
+            model = init_model(config, f"sp500-{prediction_length}d")
+            packet['forecast'] = predict([packet['symbol']], model, config)[0].to_dict()
+
         return jsonify(packet)
 
     elif request.method == 'POST':

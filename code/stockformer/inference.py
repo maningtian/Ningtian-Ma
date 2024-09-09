@@ -68,7 +68,7 @@ def predict(symbols, model, config, end_date=datetime.now().date()):
     future_dates = pd.date_range(start=pd.Timestamp(end_date), periods=30, freq='B')
 
     dataset = InferenceStockDataset(stock_dfs, config, future_dates)
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=1, shuffle=True)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=1, num_workers=2, shuffle=True)
 
     model.eval()
     forecasts = []
