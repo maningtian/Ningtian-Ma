@@ -47,7 +47,7 @@ Due to unforeseen issues with the `nvwb start jupyterlab` Docker container not r
 docker build -t portfolia .
 ```
 
-2) Start a container and make sure to set environment variables to API keys/tokens for [HuggingFace Hub](https://huggingface.co/login?next=%2Fsettings%2Fprofile), [NVIDIA NIMs](https://build.nvidia.com/explore/discover), and [Tavily](https://app.tavily.com/sign-in). The following command will run a simple test to make sure everything went well.
+2) Start a container and run a simple dependency test. The following command will run the test to make sure everything went well.
 
 You should see: `All imports successful. No dependency conflicts.`
 ```bash
@@ -55,11 +55,5 @@ docker run --rm -it --gpus all portfolia python3 code/run_test.py
 ```
 3) Start the server in a container. It will be listening on port 5000 for any incoming HTTP requests.
 ```bash
-docker run --rm -it \
--p 5000:5000 \
---gpus all \
--e HUGGINGFACE_HUB_TOKEN=$HUGGINGFACE_HUB_TOKEN \
--e NVIDIA_API_KEY=$NVIDIA_API_KEY \
--e TAVILY_API_KEY=$TAVILY_API_KEY \
-portfolia python3 code/server.py
+docker run --rm -it -p 5000:5000 --gpus all portfolia python3 code/server.py
 ```

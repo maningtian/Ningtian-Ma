@@ -3,6 +3,8 @@ FROM ubuntu:22.04
 
 # Set environment variables to prevent interactive prompts during installation
 ENV DEBIAN_FRONTEND=noninteractive
+ENV NVIDIA_API_KEY=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
+ENV TAVILY_API_KEY=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
 
 # Update and install necessary dependencies
 RUN apt-get update && \
@@ -45,4 +47,3 @@ COPY code ./code
 EXPOSE 5000
 
 USER app
-
