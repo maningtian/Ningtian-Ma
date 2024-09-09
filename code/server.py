@@ -1,10 +1,32 @@
 import os, sys, re, json
 from flask import Flask, request, jsonify
 from agentic_rag import *
-from stockformer.inference import init_config, init_model
+from stockformer.inference import init_config, init_model, predict
 
 
+DEBUG = True
 app = Flask(__name__)
+
+
+def log(msg):
+    if DEBUG:
+        print(msg)
+
+
+def packetify(output, packet):
+    pattern = r'{\s*"symbol"\s*:\s*"\w*"\s*,\s*"action"\s*:\s*"\w*"\s*,\s*"days":\s*"?\w*"?\s*}'
+    match = re.search(pattern, output)
+    if match:
+        json_string = match.group()
+        packet['message'] = output[:output.find(json_string)].strip()
+        try:
+            pred_json = json.loads(json_string)
+            packet['symbol'] = pred_json['symbol']
+            packet['action'] = pred_json['action']
+            packet['forecast'] = pred_json['days']
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON: {e}")
+    return packet
 
 
 @app.route('/chat', methods=['GET', 'POST'])
@@ -20,7 +42,7 @@ def chat():
         workflow = build_rag_pipeline()
         rag_agents = workflow.compile()
         output, err = ask(rag_agents, question)
-        print(output)
+        log(output)
 
         packet = {
             'message': output,
@@ -31,19 +53,7 @@ def chat():
         if err:
             return jsonify(packet)
         
-        pattern = r'{\s*"symbol"\s*:\s*"\w*"\s*,\s*"action"\s*:\s*"\w*"\s*,\s*"days":\s*"?\w*"?\s*}'
-        match = re.search(pattern, output)
-        if match:
-            json_string = match.group()
-            packet['message'] = output[:output.find(json_string)].strip()
-            try:
-                pred_json = json.loads(json_string)
-                packet['symbol'] = pred_json['symbol']
-                packet['action'] = pred_json['action']
-                packet['forecast'] = pred_json['days']
-            except json.JSONDecodeError as e:
-                print(f"Error decoding JSON: {e}")
-
+        packet = packetify(output, packet)
         return jsonify(packet)
 
     elif request.method == 'POST':
@@ -78,4 +88,4 @@ def chat():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=DEBUG)

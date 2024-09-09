@@ -64,6 +64,12 @@ def load_args():
         type=int,
         help="The number of epochs for the training loop"
     )
+    parser.add_argument(
+        "--num_workers",
+        default=1,
+        type=int,
+        help="The number of workers for data pre-loading"
+    )
     # Hyper params
     parser.add_argument(
         "--learning_rate",
@@ -163,9 +169,9 @@ def load_args():
     return parser.parse_args()
 
 
-def train(model, config, train_dataset, val_dataset, save_name):
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=config.batch_size, shuffle=True)
-    val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=config.batch_size, shuffle=True)
+def train(model, config, args, train_dataset, val_dataset, save_name):
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=config.batch_size, num_workers=args.num_workers, shuffle=True)
+    val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=config.batch_size, num_workers=args.num_workers, shuffle=True)
     
     scaler = torch.cuda.amp.GradScaler()
     optimizer = torch.optim.AdamW(
@@ -352,7 +358,7 @@ def main():
         model = torch.nn.DataParallel(model, device_ids=args.device_ids)
 
     print('\nStarting Training...')
-    train(model, config, train_dataset, val_dataset, args.save_name)
+    train(model, config, args, train_dataset, val_dataset, args.save_name)
 
     if args.save_name:
         print(f'\nSaving Model to {args.save_name}')
