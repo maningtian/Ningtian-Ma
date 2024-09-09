@@ -53,7 +53,10 @@ You should see: `All imports successful. No dependency conflicts.`
 ```bash
 docker run --rm -it --gpus all portfolia python3 code/run_test.py
 ```
-3) Start the server in a container. It will be listening on port 5000 for any incoming HTTP requests.
+3) Start the server in a container. It will be listening on port 5000 for any incoming HTTP API requests.
 ```bash
 docker run --rm -it -p 5000:5000 --gpus all portfolia python3 code/server.py
 ```
+
+## Start the Front-End
+Once the back-end server is up and running, feel free to launch the front-end client web application. Instructions can be found in our [portfolia-client](https://github.com/Jarhatz/portfolia-client) repository.
