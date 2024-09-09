@@ -17,5 +17,11 @@ python3 code/stockformer/train.py \
 --decoder_attention_heads 16 \
 --encoder_ffn_dim 64 \
 --decoder_ffn_dim 64 \
---save_name <NAME_FOR_MODEL>
+--save_name <MODEL_NAME>
 ```
+
+This will save the model under the directory `models/stockformer/<MODEL_NAME>/`
+
+If you would like to load a model from a checkpoint directory and resume training from its current state, use the option: `--load_checkpoint <MODEL_NAME>`
+
+A full list of options and many more training details can be found with `python3 code/stockformer/train.py --help`
