@@ -9,6 +9,8 @@ Many people get into the world of finance and are blown away by the sheer number
 Portfolia also provides a feature for forecasting any given stock with high certainty. You can select a certain prediction length and Portfolia will forecast the stock and get back to you with its accurate predictions. If you would like to understand more about what happens under the hood, we leverage Time Series Transformers pre-trained on vast amounts of financial stock data for the S&P500 companies since 2004.
 
 ## Before Getting Started
+#### ***This repository is the only the back-end. If you want to also run the front-end, please see: `link`**
+
 In this repository, the folder `models` is too large for our Git LFS limit. Please click this `link` to download a zip file of `models` which you can manually add to this cloned repository. **Note: There should be a total of 7 model checkpoint directories under `models/stockformer`.*
 
 The File Directory Structure of `models`:
@@ -45,9 +47,13 @@ Due to unforeseen issues with the `nvwb start jupyterlab` Docker container not r
 docker build -t portfolia .
 ```
 
-2) Start a container and make sure to set environment variables to API keys for HuggingFace Hub, NVIDIA NIMs, and Tavily. The following command will run a simple test to make sure everything went well.
+2) Start a container and make sure to set environment variables to API keys/tokens for [HuggingFace Hub](https://huggingface.co/login?next=%2Fsettings%2Fprofile), [NVIDIA NIMs](https://build.nvidia.com/explore/discover), and [Tavily](https://app.tavily.com/sign-in). The following command will run a simple test to make sure everything went well.
 
 You should see: `All imports successful. No dependency conflicts.`
 ```bash
 docker run --rm -it -p 5000:5000 --gpus all -e HUGGINGFACE_HUB_TOKEN=$HUGGINGFACE_HUB_TOKEN -e NVIDIA_API_KEY=$NVIDIA_API_KEY -e TAVILY_API_KEY=$TAVILY_API_KEY portfolia python3 code/run_test.py
+```
+3) Start the server in a container. It will be listening on port 5000 for any incoming HTTP requests.
+```bash
+docker run --rm -it -p 5000:5000 --gpus all -e HUGGINGFACE_HUB_TOKEN=$HUGGINGFACE_HUB_TOKEN -e NVIDIA_API_KEY=$NVIDIA_API_KEY -e TAVILY_API_KEY=$TAVILY_API_KEY portfolia python3 code/server.py
 ```
