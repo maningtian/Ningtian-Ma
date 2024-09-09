@@ -46,4 +46,3 @@ EXPOSE 5000
 
 USER app
 
-CMD ["nvidia-smi"]
