@@ -51,7 +51,7 @@ docker build -t portfolia .
 
 You should see: `All imports successful. No dependency conflicts.`
 ```bash
-docker run --rm -it -p 5000:5000 --gpus all -e HUGGINGFACE_HUB_TOKEN=$HUGGINGFACE_HUB_TOKEN -e NVIDIA_API_KEY=$NVIDIA_API_KEY -e TAVILY_API_KEY=$TAVILY_API_KEY portfolia python3 code/run_test.py
+docker run --rm -it --gpus all portfolia python3 code/run_test.py
 ```
 3) Start the server in a container. It will be listening on port 5000 for any incoming HTTP requests.
 ```bash
