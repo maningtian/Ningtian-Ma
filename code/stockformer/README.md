@@ -7,7 +7,7 @@ python3 code/stockformer/train.py \
 --stride 15 \
 --batch_size 1024 \
 --num_epochs 100 \
---num_workers 10 \
+--num_workers 8 \
 --lr 5e-5 \
 --wd 0.01 \
 --d_model 64 \
