@@ -39,8 +39,6 @@ def build_rag_pipeline():
     retriever = vectorstore.as_retriever()
 
 
-
-
     # ASSISTANT MODEL
     prompt = PromptTemplate(
         template="""<|begin_of_text|><|start_header_id|>system<|end_header_id|> You are a personalized assistant for 
