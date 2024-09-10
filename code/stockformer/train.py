@@ -10,7 +10,7 @@ from config import StockformerConfig
 from data import TrainStockDataset, fetch_yf_prices, create_sliding_windows
 
 
-BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..'))
+BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../..'))
 
 
 def load_args():
