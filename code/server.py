@@ -1,11 +1,15 @@
 import os, sys, re, json
+from dotenv import load_dotenv
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from agentic_rag import *
 from stockformer.inference import init_config, init_model, predict
 
 
 DEBUG = True
+load_dotenv(dotenv_path='variables.env')
 app = Flask(__name__)
+CORS(app)
 
 
 def log(msg):
@@ -38,7 +42,7 @@ def packetify(output, packet):
     return packet
 
 
-@app.route('/chat', methods=['GET', 'POST'])
+@app.route('/api/chat', methods=['GET'])
 def chat():
     if request.method == 'GET':
         # Retrieve query parameters from the request
@@ -65,28 +69,14 @@ def chat():
         packet = packetify(output, packet)
         if packet['symbol'] != "None" and packet['action'] != "None" and isinstance(packet['forecast'], int):
             prediction_length = min([5, 15, 30, 60, 90, 180, 365], key=lambda x: abs(x - packet['forecast']))
-            config = init_config(f"sp500-{prediction_length}d")
-            model = init_model(config, f"sp500-{prediction_length}d")
+            config = init_config(f"sp500-{prediction_length}d-final")
+            model = init_model(config, f"sp500-{prediction_length}d-final")
             packet['forecast'] = predict([packet['symbol']], model, config)[0].to_dict()
 
         return jsonify(packet)
 
-    elif request.method == 'POST':
-        # Retrieve JSON body parameters from the request
-        question = request.args.get('question', None)
 
-        # Dummy response for demonstration
-        if question:
-            return jsonify({
-                "message": f"Received POST request with symbol: {question}"
-            }), 200
-        else:
-            return jsonify({
-                "error": "Missing parameters"
-            }), 400
-
-
-# @app.route('/sip', methods=['POST']) # Send Investor Personality = sip
+# @app.route('/api/sip', methods=['POST']) # Send Investor Personality = sip
 # def sip():
     
 #     variably = request.args.get('variably', None)

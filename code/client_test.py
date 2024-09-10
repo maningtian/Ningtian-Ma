@@ -15,7 +15,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     # Define the API endpoint  
-    chat_url = 'http://localhost:5000/chat'
+    chat_url = 'http://localhost:5000/api/chat'
 
     # Define query parameters
     params = {

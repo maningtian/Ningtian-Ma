@@ -2,6 +2,8 @@ jupyterlab>3.0
 numpy
 pandas
 flask
+flask-cors
+python-dotenv
 chromadb
 requests
 yfinance

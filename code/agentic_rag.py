@@ -81,7 +81,7 @@ def build_rag_pipeline():
         or explanation. Question to route: {question} <|eot_id|><|start_header_id|>assistant<|end_header_id|>""",
         input_variables=["question"],
     )
-    llm = ChatNVIDIA(model=MODEL_ID, temperature=0)
+    llm = ChatNVIDIA(model=MODEL_ID, api_key=os.getenv('NVIDIA_API_KEY'), temperature=0)
     question_router = prompt | llm | JsonOutputParser()
 
 
@@ -98,7 +98,7 @@ def build_rag_pipeline():
         """,
         input_variables=["question", "document"],
     )
-    llm = ChatNVIDIA(model=MODEL_ID, temperature=0)
+    llm = ChatNVIDIA(model=MODEL_ID, api_key=os.getenv('NVIDIA_API_KEY'), temperature=0)
     retrieval_grader = prompt | llm | JsonOutputParser()
 
 
@@ -115,7 +115,7 @@ def build_rag_pipeline():
         Here is the answer: {generation}  <|eot_id|><|start_header_id|>assistant<|end_header_id|>""",
         input_variables=["generation", "documents"],
     )
-    llm = ChatNVIDIA(model=MODEL_ID, temperature=0)
+    llm = ChatNVIDIA(model=MODEL_ID, api_key=os.getenv('NVIDIA_API_KEY'), temperature=0)
     hallucination_grader = prompt | llm | JsonOutputParser()
 
 
@@ -131,7 +131,7 @@ def build_rag_pipeline():
         Here is the question: {question} <|eot_id|><|start_header_id|>assistant<|end_header_id|>""",
         input_variables=["generation", "question"],
     )
-    llm = ChatNVIDIA(model=MODEL_ID, temperature=0)
+    llm = ChatNVIDIA(model=MODEL_ID, api_key=os.getenv('NVIDIA_API_KEY'), temperature=0)
     answer_grader = prompt | llm | JsonOutputParser()
 
 
