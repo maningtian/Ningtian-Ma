@@ -33,6 +33,7 @@ if __name__ == "__main__":
         print(packet['symbol'])
         print(packet['action'])
         print(packet['forecast'])
+        print(packet['urls'])
     else:
         print(f'GET Failed. Status Code: {response.status_code}')
         print(response.json()['message'])

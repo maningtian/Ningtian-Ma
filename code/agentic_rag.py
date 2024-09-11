@@ -13,8 +13,22 @@ from langgraph.graph import END, StateGraph
 
 
 BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-MAIN_MODEL_ID = "meta/llama-3.1-70b-instruct"
 MODEL_ID = "meta/llama-3.1-70b-instruct"
+
+
+class WebSearcher():
+    def __init__(self, k):
+        self.web_searcher = TavilySearchResults(k=k)
+    
+    def search(self, question):
+        docs = self.web_searcher.invoke({'query': question})
+        contents = ''
+        urls = []
+        for doc in docs:
+            contents += doc['content'] + '\n'
+            urls.append(doc['url'])
+        
+        return contents.strip(), urls
 
 
 def build_rag_pipeline():
@@ -68,7 +82,7 @@ def build_rag_pipeline():
         Answer: <|eot_id|><|start_header_id|>assistant<|end_header_id|>""",
         input_variables=["question", "document"],
     )
-    llm = ChatNVIDIA(model=MAIN_MODEL_ID, temperature=0.5)
+    llm = ChatNVIDIA(model=MODEL_ID, temperature=0.5)
     rag_chain = prompt | llm | StrOutputParser()
 
 
@@ -151,6 +165,7 @@ def build_rag_pipeline():
         generation: str
         web_search: str
         documents: List[str]
+        urls: List[str]
 
     # NODES
     def web_search(state):
@@ -169,14 +184,14 @@ def build_rag_pipeline():
         documents = state["documents"] if "documents" in state.keys() else []
 
         # Web search
-        docs = TavilySearchResults(k=3).invoke({"query": question})
-        web_results = "\n".join([d["content"] for d in docs])
-        web_results = Document(page_content=web_results)
+        web_searcher = WebSearcher(k=3)
+        contents, urls = web_searcher.search(question)
+        web_results = Document(page_content=contents)
         if documents is not None:
             documents.append(web_results)
         else:
             documents = [web_results]
-        return {"documents": documents, "question": question}
+        return {"documents": documents, "question": question, "urls": urls}
 
 
     def retrieve(state):
@@ -248,10 +263,11 @@ def build_rag_pipeline():
         print("---GENERATE---")
         question = state["question"]
         documents = state["documents"]
+        urls = state["urls"]
 
         # RAG generation
         generation = rag_chain.invoke({"context": documents, "question": question})
-        return {"documents": documents, "question": question, "generation": generation}
+        return {"documents": documents, "question": question, "generation": generation, "urls": urls}
 
 
     # CONDITIONAL EDGE
@@ -325,6 +341,7 @@ def build_rag_pipeline():
         question = state["question"]
         documents = state["documents"]
         generation = state["generation"]
+        urls = state["urls"]
 
         score = hallucination_grader.invoke(
             {"documents": documents, "generation": generation}
@@ -397,8 +414,8 @@ def ask(rag_agents, question):
             if key == 'generate':
                 failure_count += 1
             if failure_count > 2:
-                return "I am sorry. I am having trouble with that. Please try again.", 1
-    return value["generation"], 0
+                return "I am sorry. I am having trouble with that. Please try again.", [], 1
+    return value["generation"], value["urls"], 0
 
 
 import argparse
@@ -424,3 +441,4 @@ if __name__ == "__main__":
         for key, value in out.items():
             pprint(f"Finished running: {key}:")
     pprint(value["generation"])
+    print(value["urls"])

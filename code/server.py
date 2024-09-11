@@ -56,7 +56,7 @@ def chat():
 
         workflow = build_rag_pipeline()
         rag_agents = workflow.compile()
-        output, err = ask(rag_agents, question)
+        output, urls, err = ask(rag_agents, question)
         log(output)
 
         packet = {
@@ -64,6 +64,7 @@ def chat():
             'symbol': None,
             'action': None,
             'forecast': None,
+            'urls': urls
         }
         if err:
             return jsonify(packet)
