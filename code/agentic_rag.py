@@ -13,7 +13,8 @@ from langgraph.graph import END, StateGraph
 
 
 BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-MODEL_ID = "meta/llama-3.1-405b-instruct"
+MAIN_MODEL_ID = "meta/llama-3.1-70b-instruct"
+MODEL_ID = "meta/llama-3.1-70b-instruct"
 
 
 def build_rag_pipeline():
@@ -67,7 +68,7 @@ def build_rag_pipeline():
         Answer: <|eot_id|><|start_header_id|>assistant<|end_header_id|>""",
         input_variables=["question", "document"],
     )
-    llm = ChatNVIDIA(model=MODEL_ID, temperature=0.5)
+    llm = ChatNVIDIA(model=MAIN_MODEL_ID, temperature=0.5)
     rag_chain = prompt | llm | StrOutputParser()
 
 
