@@ -37,6 +37,11 @@ RUN chmod 700 hf_cache
 # Set environment variables
 ENV HF_HOME=/usr/local/app/hf_cache
 
+# Copy all other environment variables
+COPY .env ./
+RUN chown app:app .env
+RUN chmod 600 .env
+
 # Copy the rest of the project files
 COPY data ./data
 COPY models ./models

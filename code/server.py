@@ -7,7 +7,9 @@ from stockformer.inference import init_config, init_model, predict
 
 
 DEBUG = True
-load_dotenv(dotenv_path='variables.env')
+load_dotenv()
+
+
 app = Flask(__name__)
 CORS(app)
 
