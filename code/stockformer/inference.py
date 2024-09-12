@@ -64,6 +64,11 @@ def init_model(config, checkpoint):
 
 
 def predict(symbols, model, config, end_date=datetime.now().date()):
+    sp500 = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
+    sp500 = symbols[0]['Symbol'].tolist()
+    for symbol in symbols:
+        if not symbol in sp500:
+            raise Exception("Symbol Not Supported - S&P500 Stocks Only!")
     stock_dfs = fetch_yf_prices_for_inference(symbols, end_date)
     future_dates = pd.date_range(start=pd.Timestamp(end_date), periods=30, freq='B')
 

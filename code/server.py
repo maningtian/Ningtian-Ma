@@ -72,9 +72,12 @@ def chat():
         packet = packetify(output, packet)
         if packet['symbol'] != "None" and packet['action'] != "None" and isinstance(packet['forecast'], int):
             prediction_length = min([5, 15, 30, 60, 90, 180, 365], key=lambda x: abs(x - packet['forecast']))
-            config = init_config(f"sp500-{prediction_length}d-final")
-            model = init_model(config, f"sp500-{prediction_length}d-final")
-            packet['forecast'] = predict([packet['symbol']], model, config)[0].to_dict()
+            try:
+                config = init_config(f"sp500-{prediction_length}d-final")
+                model = init_model(config, f"sp500-{prediction_length}d-final")
+                packet['forecast'] = predict([packet['symbol']], model, config)[0].to_dict()
+            except Exception as err:
+                print(err)
 
         return jsonify(packet)
 
