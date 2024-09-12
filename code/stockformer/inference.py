@@ -65,7 +65,7 @@ def init_model(config, checkpoint):
 
 def predict(symbols, model, config, end_date=datetime.now().date()):
     sp500 = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
-    sp500 = symbols[0]['Symbol'].tolist()
+    sp500 = sp500[0]['Symbol'].tolist()
     for symbol in symbols:
         if not symbol in sp500:
             raise Exception("Symbol Not Supported - S&P500 Stocks Only!")

@@ -79,7 +79,7 @@ def chat():
             except Exception as err:
                 print(err)
 
-        return jsonify(packet)
+        return jsonify(packet), 200
 
 
 # @app.route('/api/sip', methods=['POST']) # Send Investor Personality = sip
