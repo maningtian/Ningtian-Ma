@@ -1,7 +1,9 @@
 import os, sys, re, json
 from dotenv import load_dotenv
+from linkpreview import link_preview
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+
 from agentic_rag import *
 from stockformer.inference import init_config, init_model, predict
 
@@ -17,6 +19,28 @@ CORS(app)
 def log(msg):
     if DEBUG:
         print(msg)
+
+
+def get_link_previews(urls):
+    links = []
+    for url in urls:
+        link = {
+            'url': url,
+            'siteName': None,
+            'image': None,
+            'title': None,
+            'description': None,
+        }
+        try:
+            preview = link_preview(url)
+            link['siteName'] = preview.site_name
+            link['image'] = preview.absolute_image
+            link['title'] = preview.title
+            link['description'] = preview.description
+        except:
+            pass
+        links.append(link)
+    return links
 
 
 def packetify(output, packet):
@@ -57,14 +81,15 @@ def chat():
         workflow = build_rag_pipeline()
         rag_agents = workflow.compile()
         output, urls, err = ask(rag_agents, question)
+        links = get_link_previews(urls)
         log(output)
 
         packet = {
             'message': output,
+            'links': links,
             'symbol': None,
             'action': None,
             'forecast': None,
-            'urls': urls
         }
         if err:
             return jsonify(packet)

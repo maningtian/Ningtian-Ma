@@ -1,7 +1,18 @@
 import requests
 import argparse
+# from linkpreview import link_preview
 
 if __name__ == "__main__":
+    # url = "https://coincodex.com/stock/NVDA/price-prediction/"
+    # preview = link_preview(url)
+    # print("title:", preview.title)
+    # print("description:", preview.description)
+    # print("image:", preview.image)
+    # print("force_title:", preview.force_title)
+    # print("absolute_image:", preview.absolute_image)
+    # print("site_name:", preview.site_name)
+    # print("favicon:", preview.favicon)
+    # print("absolute_favicon:", preview.absolute_favicon)
     
     parser = argparse.ArgumentParser(description="Ask a question.")
     parser.add_argument(
@@ -47,5 +58,3 @@ if __name__ == "__main__":
     #     print("POST Success:", response.json())
     # else:
     #     print("POST Failed:", response.status_code)
-
-        

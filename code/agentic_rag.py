@@ -414,7 +414,7 @@ def ask(rag_agents, question):
             if key == 'generate':
                 failure_count += 1
             if failure_count > 2:
-                return "I am sorry. I am having trouble finding relevant information for your request. Please try again.", [], 1
+                return "I am sorry. I am having trouble with your request. Please try again.", [], 1
     return value["generation"], value["urls"], 0
 
 

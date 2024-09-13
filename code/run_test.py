@@ -7,8 +7,8 @@ import transformers
 import tqdm
 import langchain
 import langchain_community
-import langgraph
 import langchain_nvidia_ai_endpoints
+import langgraph
 
 if __name__ == "__main__":
     # Check if CUDA is available
