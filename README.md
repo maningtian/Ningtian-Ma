@@ -9,7 +9,7 @@ Many people get into the world of finance and are blown away by the sheer number
 Portfolia also provides a feature for forecasting any given stock with high certainty. You can select a certain prediction length and Portfolia will forecast the stock and get back to you with its accurate predictions. If you would like to understand more about what happens under the hood, we leverage Time Series Transformers pre-trained on vast amounts of financial stock data for the S&P500 companies since 2004.
 
 ## Before Getting Started
-### ***Note: This repository is the only the back-end. The front-end repository can be found [here](https://github.com/Jarhatz/portfolia-client).**
+### ***Note: This is the back-end repository. The front-end repository is [here](https://github.com/Jarhatz/portfolia-client).**
 
 In this repository, the folder `models` is too large for our Git LFS limit. Please click this [link](https://google.com/) to download a zip file of `models` which you can manually add to this cloned repository. **Note: There should be a total of 7 model checkpoint directories under `models/stockformer`.*
 
