@@ -77,6 +77,11 @@ def chat():
             return jsonify({
                 "message": "Missing parameter [question]"
             }), 400
+        
+        # # # TESTING # # #
+        with open('code/response-buy.json', 'r') as f:
+            return jsonify(json.load(f))
+        # # # TESTING # # #
 
         workflow = build_rag_pipeline()
         rag_agents = workflow.compile()
@@ -100,7 +105,7 @@ def chat():
             try:
                 config = init_config(f"sp500-{prediction_length}d-final")
                 model = init_model(config, f"sp500-{prediction_length}d-final")
-                packet['forecast'] = predict([packet['symbol']], model, config)[0].to_dict()
+                packet['forecast'] = predict([packet['symbol']], prediction_length, model, config)[0].to_dict()
             except Exception as err:
                 print(err)
 

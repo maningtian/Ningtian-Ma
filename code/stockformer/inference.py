@@ -63,7 +63,7 @@ def init_model(config, checkpoint):
         raise Exception(f'The model checkpoint was not found under: {pretrained_path}')
 
 
-def predict(symbols, model, config, end_date=datetime.now().date()):
+def predict(symbols, prediction_length, model, config, end_date=datetime.now().date()):
     sp500 = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
     sp500 = sp500[0]['Symbol'].tolist()
     for symbol in symbols:
@@ -90,6 +90,8 @@ def predict(symbols, model, config, end_date=datetime.now().date()):
             # print(outputs.sequences.quantile(0.025, dim=1))
             # print(outputs.sequences.quantile(0.975, dim=1))
         forecast = pd.concat([dataset.data[i], revert_preprocessing(dataset.data[i], prediction, future_dates)], ignore_index=True)
+        # Drop the first `prediction_length` due to inference with lags_sequence
+        forecast = forecast.iloc[prediction_length:]
         forecasts.append(forecast)
     return forecasts
 
