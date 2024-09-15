@@ -9,7 +9,7 @@ Many people get into the world of finance and are blown away by the sheer number
 Portfolia also provides a feature for forecasting any given stock with high certainty. You can select a certain prediction length and Portfolia will forecast the stock and get back to you with its accurate predictions. If you would like to understand more about what happens under the hood, we leverage Time Series Transformers pre-trained on vast amounts of financial stock data for the S&P500 companies since 2004.
 
 ## Before Getting Started
-### ***This repository is the only the back-end. The front-end repository can be found [here](https://github.com/Jarhatz/portfolia-client).**
+### ***Note: This repository is the only the back-end. The front-end repository can be found [here](https://github.com/Jarhatz/portfolia-client).**
 
 In this repository, the folder `models` is too large for our Git LFS limit. Please click this [link](https://google.com/) to download a zip file of `models` which you can manually add to this cloned repository. **Note: There should be a total of 7 model checkpoint directories under `models/stockformer`.*
 
@@ -40,19 +40,17 @@ Due to unforeseen issues with the `nvwb start jupyterlab` Docker container not r
 ## Getting Started
 
 1) Build the docker image with the Dockerfile present in the root directory of this repository.
-
-**Note: This may take ~5 minutes to build*
-
 ```bash
 docker build -t portfolia .
 ```
+**Note: This may take ~5 minutes to build*
 
 2) Start a container and run a simple dependency test. The following command will run the test to make sure everything went well.
-
-You should see: `All imports successful. No dependency conflicts.`
 ```bash
 docker run --rm -it --gpus all portfolia python3 code/run_test.py
 ```
+You should see: `All imports successful. No dependency conflicts.`
+
 3) Start the server in a container. It will be listening on port 5000 for any incoming HTTP API requests.
 ```bash
 docker run --rm -it -p 5000:5000 --gpus all portfolia python3 code/server.py
