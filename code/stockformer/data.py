@@ -88,9 +88,8 @@ class TrainStockDataset(torch.utils.data.Dataset):
         }
     
 
-def fetch_yf_prices_for_inference(symbols, end_date):
-    prediction_length = 30
-    context_length = 120
+def fetch_yf_prices_for_inference(prediction_length, symbols, end_date):
+    context_length = prediction_length * 4
     if isinstance(end_date, str):
         end_date = datetime.strptime(end_date, "%Y-%m-%d") 
     start_date = end_date - timedelta(days=365*20)

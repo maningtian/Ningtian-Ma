@@ -78,10 +78,10 @@ def chat():
                 "message": "Missing parameter [question]"
             }), 400
         
-        # # # TESTING # # #
-        with open('code/response-buy.json', 'r') as f:
-            return jsonify(json.load(f))
-        # # # TESTING # # #
+        # # # # TESTING # # #
+        # with open('code/response-buy.json', 'r') as f:
+        #     return jsonify(json.load(f))
+        # # # # TESTING # # #
 
         workflow = build_rag_pipeline()
         rag_agents = workflow.compile()
