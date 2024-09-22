@@ -14,7 +14,7 @@ class InferenceStockDataset(torch.utils.data.Dataset):
         self.config = config
         self.future_dates = future_dates
         self.temporal_functions = time_features_from_frequency_str('1D')
-        with open(os.path.join(BASE_PATH, f'data/sp500/sp500-2024Q3.json'), 'r') as f:
+        with open(os.path.join(BASE_PATH, f'data/sp500/sp500-2024-symbols.json'), 'r') as f:
             self.symbol_id_map = json.load(f)
     
     def __len__(self):
@@ -51,7 +51,7 @@ class TrainStockDataset(torch.utils.data.Dataset):
         self.data = data
         self.config = config
         self.temporal_functions = time_features_from_frequency_str('1D')
-        with open(os.path.join(BASE_PATH, f'data/sp500/sp500-2024Q3.json'), 'r') as f:
+        with open(os.path.join(BASE_PATH, f'data/sp500/sp500-2024-symbols.json'), 'r') as f:
             self.symbol_id_map = json.load(f)
     
     def __len__(self):
@@ -108,7 +108,7 @@ def fetch_yf_prices(symbols=None, start_date=None, end_date=None):
         symbols = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
         symbols = symbols[0]['Symbol'].tolist()
 
-    file_path = os.path.join(BASE_PATH,'data/sp500/sp500-2024Q3.json')
+    file_path = os.path.join(BASE_PATH,'data/sp500/sp500-2024-symbols.json')
     if not os.path.exists(file_path):
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, 'w') as f:
@@ -140,11 +140,13 @@ def fetch_yf_prices(symbols=None, start_date=None, end_date=None):
             stock_df.reset_index(inplace=True)
             stock_df.insert(1, 'Symbol', symbol)
 
-            # Save data to local storage to avoid redownloading data
-            os.makedirs(os.path.dirname(file_path), exist_ok=True)
-            stock_df.to_csv(file_path, index=False)
+            if len(stock_df) > 0:
+                # Save data to local storage to avoid redownloading data
+                os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                stock_df.to_csv(file_path, index=False)
         
-        stock_dfs.append(stock_df)
+        if len(stock_df) > 0:
+            stock_dfs.append(stock_df)
 
     return stock_dfs
 
