@@ -124,7 +124,7 @@ def fetch_yf_prices(symbols=None, start_date=None, end_date=None):
         print(f'[{i}] {symbol}', end='\t')
 
         file_path = os.path.join(BASE_PATH, f'data/sp500/2014-2024/{symbol}.csv')
-        if os.path.exists(file_path) and start_date is None:
+        if os.path.exists(file_path):
             print('Loading...', end='  ')
             stock_df = pd.read_csv(file_path)
             print('1 of 1 completed')
