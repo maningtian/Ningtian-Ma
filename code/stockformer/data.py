@@ -115,25 +115,27 @@ def fetch_yf_prices(symbols=None, start_date=None, end_date=None):
             json.dump({symbol: i for i, symbol in enumerate(symbols)}, f)
 
     if isinstance(end_date, str):
-        end_date = datetime.strptime(end_date, "%Y-%m-%d")
+        end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
     else:
         end_date = datetime.now().date()
+ 
     stock_dfs = []
-
     for i, symbol in enumerate(symbols):
         print(f'[{i}] {symbol}', end='\t')
 
-        file_path = os.path.join(BASE_PATH, f'data/sp500/2004-2024/{symbol}.csv')
-        if os.path.exists(file_path):
+        file_path = os.path.join(BASE_PATH, f'data/sp500/2014-2024/{symbol}.csv')
+        if os.path.exists(file_path) and start_date is None:
             print('Loading...', end='  ')
             stock_df = pd.read_csv(file_path)
             print('1 of 1 completed')
 
         else:
-            if not start_date:
+            if isinstance(start_date, str):
+                start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+            else:
                 # Use past 20 years of data
                 start_date = end_date - timedelta(days=365*20)
-
+            
             stock_df = yf.download(symbol, start=start_date, end=end_date)
             stock_df.reset_index(inplace=True)
             stock_df.insert(1, 'Symbol', symbol)

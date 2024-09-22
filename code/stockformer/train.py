@@ -47,6 +47,12 @@ def load_args():
     )
     # Training params
     parser.add_argument(
+        "--start_date",
+        required=False,
+        type=str,
+        help="The date, in format `YYYY-MM-DD`, starting from which the training data will accumulate sliding windows of. Default is `present - 20 years`"
+    )
+    parser.add_argument(
         "--end_date",
         required=False,
         type=str,
@@ -278,7 +284,7 @@ def main():
 
     print('Preprocessing Dataset...')
     start_time = time.time()
-    stock_df = fetch_yf_prices(symbols=[args.symbol] if args.symbol else None, end_date=args.end_date)
+    stock_df = fetch_yf_prices(symbols=[args.symbol] if args.symbol else None, start_date=args.start_date, end_date=args.end_date)
     print('Loaded Yahoo Finance S&P500 Data (Elapsed Time):\t', time.time() - start_time, 'seconds')
     start_time = time.time()
     train_data, val_data = create_sliding_windows(stock_df, args.prediction_length, args.context_length, args.stride)
