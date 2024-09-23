@@ -123,20 +123,14 @@ def fetch_yf_prices(symbols=None, start_date=None, end_date=None):
     for i, symbol in enumerate(symbols):
         print(f'[{i}] {symbol}', end='\t')
 
-        file_path = os.path.join(BASE_PATH, f'data/sp500/2014-2024/{symbol}.csv')
+        file_path = os.path.join(BASE_PATH, f'data/sp500/2004-2024/{symbol}.csv')
         if os.path.exists(file_path):
             print('Loading...', end='  ')
             stock_df = pd.read_csv(file_path)
             print('1 of 1 completed')
 
         else:
-            if isinstance(start_date, str):
-                start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
-            else:
-                # Use past 20 years of data
-                start_date = end_date - timedelta(days=365*20)
-            
-            stock_df = yf.download(symbol, start=start_date, end=end_date)
+            stock_df = yf.download(symbol, start=end_date - timedelta(days=365*20), end=end_date)
             stock_df.reset_index(inplace=True)
             stock_df.insert(1, 'Symbol', symbol)
 
@@ -145,13 +139,18 @@ def fetch_yf_prices(symbols=None, start_date=None, end_date=None):
                 os.makedirs(os.path.dirname(file_path), exist_ok=True)
                 stock_df.to_csv(file_path, index=False)
         
+        stock_df['Date'] = pd.to_datetime(stock_df['Date'])
+        if isinstance(start_date, str):
+            # start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+            stock_df = stock_df[stock_df['Date'] >= pd.to_datetime(start_date)]
+        
         if len(stock_df) > 0:
             stock_dfs.append(stock_df)
 
     return stock_dfs
 
 
-def create_sliding_windows(stock_dfs, prediction_length, context_length, stride):
+def create_sliding_windows(stock_dfs, prediction_length, context_length, stride, step):
     train, val = [], []
 
     for stock_df in stock_dfs:

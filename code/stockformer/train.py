@@ -41,6 +41,12 @@ def load_args():
         help="The stride for sliding windows over the time-series data. Default is `2 * prediction_length`"
     )
     parser.add_argument(
+        "--step",
+        default=1,
+        type=int,
+        help="The step for timestamp samples over the context window for the financial data. Default is `1`"
+    )
+    parser.add_argument(
         "--use_static_categorical_features",
         action="store_true",
         help="The model will use a static categorical feature (symbol) for each sliding windows over the time-series data"
@@ -287,7 +293,7 @@ def main():
     stock_df = fetch_yf_prices(symbols=[args.symbol] if args.symbol else None, start_date=args.start_date, end_date=args.end_date)
     print('Loaded Yahoo Finance S&P500 Data (Elapsed Time):\t', time.time() - start_time, 'seconds')
     start_time = time.time()
-    train_data, val_data = create_sliding_windows(stock_df, args.prediction_length, args.context_length, args.stride)
+    train_data, val_data = create_sliding_windows(stock_df, args.prediction_length, args.context_length, args.stride, args.step)
     print('Created Sliding Windows (Elapsed Time):\t', time.time() - start_time, 'seconds')
 
     print('\nPreparing Model Configuration...')

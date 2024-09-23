@@ -69,6 +69,7 @@ def predict(symbols, prediction_length, model, config, end_date=datetime.now().d
     for symbol in symbols:
         if not symbol in sp500:
             raise Exception("Symbol Not Supported - S&P500 Stocks Only!")
+    
     stock_dfs = fetch_yf_prices_for_inference(prediction_length, symbols, end_date)
     future_dates = pd.date_range(start=pd.Timestamp(end_date), periods=prediction_length, freq='B')
 
