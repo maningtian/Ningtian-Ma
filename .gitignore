@@ -6,6 +6,7 @@
 # General ignores
 .DS_Store
 logs
+visuals
 models
 
 # Byte-compiled / optimized / DLL files

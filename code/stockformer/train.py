@@ -38,13 +38,13 @@ def load_args():
         "--stride",
         required=False,
         type=int,
-        help="The stride for sliding windows over the time-series data. Default is `2 * prediction_length`"
+        help="The stride for sliding windows over the time-series data. Default is `prediction_length / 2`"
     )
     parser.add_argument(
-        "--step",
-        default=1,
+        "--down_sample",
+        required=False,
         type=int,
-        help="The step for timestamp samples over the context window for the financial data. Default is `1`"
+        help="The number of samples over the context window over the time series data. Default is `min(prediction_length, 30)`"
     )
     parser.add_argument(
         "--use_static_categorical_features",
@@ -284,7 +284,9 @@ def main():
     if not args.context_length:
         args.context_length = 4 * args.prediction_length
     if not args.stride:
-        args.stride = 2 * args.prediction_length
+        args.stride = args.prediction_length // 2
+    if not args.down_sample:
+        args.down_sample = min(args.prediction_length, 30)
     if not args.symbol:
         args.use_static_categorical_features = True
 
@@ -293,7 +295,8 @@ def main():
     stock_df = fetch_yf_prices(symbols=[args.symbol] if args.symbol else None, start_date=args.start_date, end_date=args.end_date)
     print('Loaded Yahoo Finance S&P500 Data (Elapsed Time):\t', time.time() - start_time, 'seconds')
     start_time = time.time()
-    train_data, val_data = create_sliding_windows(stock_df, args.prediction_length, args.context_length, args.stride, args.step)
+    train_data, val_data = create_sliding_windows(stock_df, args.prediction_length, args.context_length, args.stride, args.down_sample)
+    print(f'Window Shape: {train_data[0].shape}')
     print('Created Sliding Windows (Elapsed Time):\t', time.time() - start_time, 'seconds')
 
     print('\nPreparing Model Configuration...')
@@ -316,8 +319,8 @@ def main():
             embedding_dimension = None
         config = StockformerConfig(
             symbol=args.symbol,
-            prediction_length=args.prediction_length,
-            context_length=args.context_length,
+            prediction_length=args.down_sample,
+            context_length=4*args.down_sample,
             stride=args.stride,
             use_static_categorical_features=args.use_static_categorical_features,
             batch_size=args.batch_size,
@@ -345,8 +348,9 @@ def main():
         print(f"{attr}: {value}")
 
     print('\nIntializing Dataset...')
-    train_dataset = TrainStockDataset(train_data, config)
-    val_dataset = TrainStockDataset(val_data, config)
+    day_freq = args.prediction_length // args.down_sample
+    train_dataset = TrainStockDataset(train_data, config, day_freq)
+    val_dataset = TrainStockDataset(val_data, config, day_freq)
     print('\tDone.')
     print(f'\tTraining Dataset Length: {len(train_dataset)}')
     print(f'\tValidation Dataset Length: {len(val_dataset)}')

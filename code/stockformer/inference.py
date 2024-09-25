@@ -1,14 +1,11 @@
 import os, argparse
 from datetime import datetime, timedelta
-import numpy as np
 import pandas as pd
-import yfinance as yf
 import torch
-import torch.nn.functional as F
 from transformers import TimeSeriesTransformerForPrediction
 
-from stockformer.config import StockformerConfig
-from stockformer.data import InferenceStockDataset, fetch_yf_prices_for_inference, revert_preprocessing
+from config import StockformerConfig
+from data import InferenceStockDataset, fetch_yf_prices_for_inference, revert_preprocessing
 
 
 BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..'))
@@ -63,7 +60,7 @@ def init_model(config, checkpoint):
         raise Exception(f'The model checkpoint was not found under: {pretrained_path}')
 
 
-def predict(symbols, prediction_length, model, config, end_date=datetime.now().date()):
+def predict(symbols, model, config, prediction_length, down_sample, end_date=datetime.now().date()):
     sp500 = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
     sp500 = sp500[0]['Symbol'].tolist()
     for symbol in symbols:
@@ -71,9 +68,9 @@ def predict(symbols, prediction_length, model, config, end_date=datetime.now().d
             raise Exception("Symbol Not Supported - S&P500 Stocks Only!")
     
     stock_dfs = fetch_yf_prices_for_inference(prediction_length, symbols, end_date)
-    future_dates = pd.date_range(start=pd.Timestamp(end_date), periods=prediction_length, freq='B')
+    future_dates = pd.date_range(start=pd.Timestamp(end_date), periods=down_sample, freq=f'{prediction_length // down_sample}B')
 
-    dataset = InferenceStockDataset(stock_dfs, config, future_dates)
+    dataset = InferenceStockDataset(stock_dfs, config, future_dates, prediction_length // down_sample)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=1, num_workers=2, shuffle=True)
 
     model.eval()

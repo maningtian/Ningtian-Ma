@@ -9,11 +9,11 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file_
 
 
 class InferenceStockDataset(torch.utils.data.Dataset):
-    def __init__(self, data, config, future_dates):
+    def __init__(self, data, config, future_dates, day_freq):
         self.data = data
         self.config = config
         self.future_dates = future_dates
-        self.temporal_functions = time_features_from_frequency_str('1D')
+        self.temporal_functions = time_features_from_frequency_str(f'{day_freq}D')
         with open(os.path.join(BASE_PATH, f'data/sp500/sp500-2024-symbols.json'), 'r') as f:
             self.symbol_id_map = json.load(f)
     
@@ -47,10 +47,10 @@ class InferenceStockDataset(torch.utils.data.Dataset):
     
 
 class TrainStockDataset(torch.utils.data.Dataset):
-    def __init__(self, data, config):
+    def __init__(self, data, config, day_freq):
         self.data = data
         self.config = config
-        self.temporal_functions = time_features_from_frequency_str('1D')
+        self.temporal_functions = time_features_from_frequency_str(f'{day_freq}D')
         with open(os.path.join(BASE_PATH, f'data/sp500/sp500-2024-symbols.json'), 'r') as f:
             self.symbol_id_map = json.load(f)
     
@@ -92,7 +92,7 @@ def fetch_yf_prices_for_inference(prediction_length, symbols, end_date):
     context_length = prediction_length * 4
     if isinstance(end_date, str):
         end_date = datetime.strptime(end_date, "%Y-%m-%d") 
-    start_date = end_date - timedelta(days=365*20)
+    start_date = end_date - timedelta(days=365*7)
 
     stock_dfs = []
     for symbol in symbols:
@@ -150,7 +150,7 @@ def fetch_yf_prices(symbols=None, start_date=None, end_date=None):
     return stock_dfs
 
 
-def create_sliding_windows(stock_dfs, prediction_length, context_length, stride, step):
+def create_sliding_windows(stock_dfs, prediction_length, context_length, stride, down_sample):
     train, val = [], []
 
     for stock_df in stock_dfs:
@@ -160,8 +160,9 @@ def create_sliding_windows(stock_dfs, prediction_length, context_length, stride,
             if end > num_rows:
                 break
 
-            train.append(stock_df.iloc[start : end - prediction_length].reset_index(drop=True))
-            val.append(stock_df.iloc[start + prediction_length : end].reset_index(drop=True))
+            step = (6 * prediction_length) // (6 * down_sample)
+            train.append(stock_df.iloc[start : end - prediction_length].iloc[::step].reset_index(drop=True))
+            val.append(stock_df.iloc[start + prediction_length : end].iloc[::step].reset_index(drop=True))
 
     return train, val
 

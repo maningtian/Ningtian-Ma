@@ -105,7 +105,7 @@ def chat():
             try:
                 config = init_config(f"sp500-{prediction_length}d-final")
                 model = init_model(config, f"sp500-{prediction_length}d-final")
-                packet['forecast'] = predict([packet['symbol']], prediction_length, model, config)[0].to_dict()
+                packet['forecast'] = predict([packet['symbol']], model, config, prediction_length, min(prediction_length, 30))[0].to_dict()
             except Exception as err:
                 print(err)
 
