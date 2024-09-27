@@ -79,8 +79,6 @@ def chat():
                 "message": "Missing parameter [question]"
             }), 400
         
-        workflow = build_rag_pipeline()
-        rag_agents = workflow.compile()
         output, urls, err = ask(rag_agents, question)
         links = get_link_previews(urls)
         log(output)
@@ -126,4 +124,6 @@ def chat():
 
 
 if __name__ == '__main__':
+    workflow = build_rag_pipeline()
+    rag_agents = workflow.compile()
     app.run(host='0.0.0.0', port=5000, debug=DEBUG)
