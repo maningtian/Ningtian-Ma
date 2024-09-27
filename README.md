@@ -18,18 +18,18 @@ The File Directory Structure of `models`:
 ┣ 📂 models
 ┃   ┗ 📜 .gitkeep
 ┃   ┣ 📂 stockformer
-┃   ┃   ┗ 📂 sp500-5d-final
-┃   ┃   ┃   ┗ 📜 sp500-5d-final-config.pth
-┃   ┃   ┃   ┗ 📜 sp500-5d-final-state.pth
-┃   ┃   ┗ 📂 sp500-15d-final
-┃   ┃   ┃   ┗ 📜 ...
-┃   ┃   ┃   ┗ 📜 ...
-┃   ┃   ┗ 📂 ...
-┃   ┃   ┗ 📂 ...
-┃   ┃   ┗ 📂 ...
+┃   ┃   ┗ 📂 sp500-30d-final
+┃   ┃   ┃   ┗ 📜 sp500-30d-final-config.pth
+┃   ┃   ┃   ┗ 📜 sp500-30d-final-state.pth
+┃   ┃   ┗ 📂 sp500-60d-final
+┃   ┃   ┃   ┗ 📜 sp500-60d-final-config.pth
+┃   ┃   ┃   ┗ 📜 sp500-60d-final-state.pth
+┃   ┃   ┗ 📂 sp500-90d-final
+┃   ┃   ┃   ┗ 📜 sp500-90d-final-config.pth
+┃   ┃   ┃   ┗ 📜 sp500-90d-final-state.pth
 ┃   ┃   ┗ 📂 sp500-180d-final
-┃   ┃   ┃   ┗ 📜 ...
-┃   ┃   ┃   ┗ 📜 ...
+┃   ┃   ┃   ┗ 📜 sp500-180d-final-config.pth
+┃   ┃   ┃   ┗ 📜 sp500-180d-final-state.pth
 ┃   ┃   ┗ 📂 sp500-360d-final
 ┃   ┃   ┃   ┗ 📜 sp500-360d-final-config.pth
 ┃   ┃   ┃   ┗ 📜 sp500-360d-final-state.pth
