@@ -50,3 +50,5 @@ COPY code ./code
 EXPOSE 5000
 
 USER app
+
+CMD ["python3", "code/server.py"]
