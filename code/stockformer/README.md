@@ -4,7 +4,7 @@ Example training command:
 ```bash
 python3 code/stockformer/train.py \
 --prediction_length 30 \
---stride 15 \
+--lags_sequence 1 2 3 5 7 10 15 20 25 30 \
 --batch_size 1024 \
 --num_epochs 100 \
 --num_workers 8 \

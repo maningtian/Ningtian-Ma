@@ -99,10 +99,10 @@ def load_args():
     )
     parser.add_argument(
         "--lags_sequence",
-        default=[1, 2, 3, 5, 7, 10, 15, 20, 30],
+        default=[1, 2, 3, 5, 7, 10, 15, 20, 25, 30],
         nargs="+",
         type=int,
-        help="The lags of the input time series as covariates often dictated by the frequency of the data. Can be tuned to capture very short-term, medium-term, and long-term dependencies. Default is `[1, 2, 3, 5, 7, 10, 14, 21]`"
+        help="The lags of the input time series as covariates often dictated by the frequency of the data. Can be tuned to capture very short-term, medium-term, and long-term dependencies. Default is `[1, 2, 3, 5, 7, 10, 15, 20, 25, 30]`"
     )
     parser.add_argument(
         "--d_model",

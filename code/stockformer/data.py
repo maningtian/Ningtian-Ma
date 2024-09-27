@@ -88,18 +88,18 @@ class TrainStockDataset(torch.utils.data.Dataset):
         }
     
 
-def fetch_yf_prices_for_inference(prediction_length, symbols, end_date):
+def fetch_yf_prices_for_inference(symbols, prediction_length, down_sample, end_date):
     context_length = prediction_length * 4
     if isinstance(end_date, str):
         end_date = datetime.strptime(end_date, "%Y-%m-%d") 
-    start_date = end_date - timedelta(days=365*7)
+    start_date = end_date - timedelta(days=365*10)
 
     stock_dfs = []
     for symbol in symbols:
         stock_df = yf.download(symbol, start=start_date, end=end_date)
         stock_df.reset_index(inplace=True)
         stock_df.insert(1, 'Symbol', symbol)
-        stock_dfs.append(stock_df.iloc[-prediction_length-context_length-1:].reset_index(drop=True))
+        stock_dfs.append(stock_df.iloc[-prediction_length-context_length-1 :: prediction_length // down_sample].reset_index(drop=True))
     return stock_dfs
 
 
@@ -160,9 +160,9 @@ def create_sliding_windows(stock_dfs, prediction_length, context_length, stride,
             if end > num_rows:
                 break
 
-            step = (6 * prediction_length) // (6 * down_sample)
-            train.append(stock_df.iloc[start : end - prediction_length].iloc[::step].reset_index(drop=True))
-            val.append(stock_df.iloc[start + prediction_length : end].iloc[::step].reset_index(drop=True))
+            step = prediction_length // down_sample
+            train.append(stock_df.iloc[start : end - prediction_length : step].reset_index(drop=True))
+            val.append(stock_df.iloc[start + prediction_length : end : step].reset_index(drop=True))
 
     return train, val
 

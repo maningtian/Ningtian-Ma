@@ -4,8 +4,8 @@ import pandas as pd
 import torch
 from transformers import TimeSeriesTransformerForPrediction
 
-from config import StockformerConfig
-from data import InferenceStockDataset, fetch_yf_prices_for_inference, revert_preprocessing
+from stockformer.config import StockformerConfig
+from stockformer.data import InferenceStockDataset, fetch_yf_prices_for_inference, revert_preprocessing
 
 
 BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..'))
@@ -67,7 +67,7 @@ def predict(symbols, model, config, prediction_length, down_sample, end_date=dat
         if not symbol in sp500:
             raise Exception("Symbol Not Supported - S&P500 Stocks Only!")
     
-    stock_dfs = fetch_yf_prices_for_inference(prediction_length, symbols, end_date)
+    stock_dfs = fetch_yf_prices_for_inference(symbols, prediction_length, down_sample, end_date)
     future_dates = pd.date_range(start=pd.Timestamp(end_date), periods=down_sample, freq=f'{prediction_length // down_sample}B')
 
     dataset = InferenceStockDataset(stock_dfs, config, future_dates, prediction_length // down_sample)
@@ -89,7 +89,7 @@ def predict(symbols, model, config, prediction_length, down_sample, end_date=dat
             # print(outputs.sequences.quantile(0.975, dim=1))
         forecast = pd.concat([dataset.data[i], revert_preprocessing(dataset.data[i], prediction, future_dates)], ignore_index=True)
         # Drop the first `prediction_length` due to inference with lags_sequence
-        forecast = forecast.iloc[prediction_length:]
+        forecast = forecast.iloc[down_sample:]
         forecasts.append(forecast)
     return forecasts
 

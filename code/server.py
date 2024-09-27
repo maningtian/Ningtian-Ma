@@ -48,7 +48,8 @@ def packetify(output, packet):
     match = re.search(pattern, output)
     if match:
         json_string = match.group()
-        packet['message'] = output[:output.find(json_string)].strip()
+        packet['message'] = output[:output[:output.find('JSON')].rfind('\n')].strip()
+
         try:
             pred_json = json.loads(json_string)
             try:
@@ -78,11 +79,6 @@ def chat():
                 "message": "Missing parameter [question]"
             }), 400
         
-        # # # # TESTING # # #
-        # with open('code/response-buy.json', 'r') as f:
-        #     return jsonify(json.load(f))
-        # # # # TESTING # # #
-
         workflow = build_rag_pipeline()
         rag_agents = workflow.compile()
         output, urls, err = ask(rag_agents, question)
@@ -101,11 +97,12 @@ def chat():
         
         packet = packetify(output, packet)
         if packet['symbol'] != "None" and packet['action'] != "None" and isinstance(packet['forecast'], int):
-            prediction_length = min([5, 15, 30, 60, 90, 180, 365], key=lambda x: abs(x - packet['forecast']))
+            prediction_length = min([30, 60, 90, 180, 360], key=lambda x: abs(x - packet['forecast']))
             try:
                 config = init_config(f"sp500-{prediction_length}d-final")
                 model = init_model(config, f"sp500-{prediction_length}d-final")
                 packet['forecast'] = predict([packet['symbol']], model, config, prediction_length, min(prediction_length, 30))[0].to_dict()
+                packet['forecast']['Num Days'] = prediction_length
             except Exception as err:
                 print(err)
 

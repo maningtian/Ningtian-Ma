@@ -16,7 +16,7 @@ class StockformerConfig(TimeSeriesTransformerConfig):
         distribution_output: str = "student_t",
         loss: str = "nll",
         input_size: int = 6,
-        lags_sequence: List[int] = [1, 2, 3, 5, 7, 10, 15, 20, 30],
+        lags_sequence: List[int] = [1, 2, 3, 5, 7, 10, 15, 20, 25, 30],
         scaling: Optional[Union[str, bool]] = "mean",
         num_dynamic_real_features: int = 0,
         num_static_categorical_features: int = 0,
