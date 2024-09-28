@@ -1,3 +1,4 @@
+# Stockformer: A Time Series Transformer for Stock Prediction
 ## Pre-Training Stockformer Script
 Example training command:
 
