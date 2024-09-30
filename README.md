@@ -15,9 +15,9 @@ The financial and investment landscape can be daunting for newcomers due to the 
 <a id="section-2"></a>
 ## Problem Statement
 Portfolia is an AI-powered personal investment advisor and stock forecasting assistant powered by LLM agents and Time Series Transformers. The primary objectives are:
-1) To create an accessible and user-friendly platform that provides personalized financial advice and education to users of all experience levels.
-2) To develop an accurate stock forecasting feature leveraging deep learning with time series transformers at various prediction lengths.
-3) To enhance financial literacy by explaining complex financial concepts in simple, understandable terms.
+1. To create an accessible and user-friendly platform that provides personalized financial advice and education to users of all experience levels.
+2. To develop an accurate stock forecasting feature leveraging deep learning with time series transformers at various prediction lengths.
+3. To enhance financial literacy by explaining complex financial concepts in simple, understandable terms.
 
 <a id="section-3"></a>
 ## Stockformer: Time Series Transformer for S&P 500 Stock Forecasting 
