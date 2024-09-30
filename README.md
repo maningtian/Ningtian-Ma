@@ -4,9 +4,9 @@
 - [Background & Motivation](#section-1)
 - [Problem Statement](#section-2)
 - [Features](#section-3)
-- [Stockformer](#section-3)
-- [Before Getting Started](#section-3)
-- [Getting Started](#section-3)
+- [Stockformer](#section-4)
+- [Before Getting Started](#section-5)
+- [Getting Started](#section-6)
 
 <a id="section-1"></a>
 ## Background & Motivation
