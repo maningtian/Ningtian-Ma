@@ -17,7 +17,7 @@ Portfolia is an AI-powered personal investment advisor and stock forecasting ass
 4. User Interface: Develop an intuitive, conversational interface that allows users to interact naturally with the AI advisor.
 5. Scalable Back-End: Build a system which enables horizontal scalability by allowing concurrent request handling for stock forecasting during inference.
 
-## Stockformer: Time Series Transformer for S&P500 Stock Forecasting 
+## Stockformer: Time Series Transformer for S&P 500 Stock Forecasting 
 Given the complexity of financial data, characterized by its inherent randomness, noise, and non-stationarity, extensive research has been conducted on leveraging deep learning-based representation learning for accurate stock price prediction. A recent publication, ["Transformers in Time Series: A Survey"](https://arxiv.org/abs/2202.07125) (Wen et al., 2023), presents a case study utilizing Time Series Transformers to forecast the Bangladeshi stock market in Dhaka. Building upon this research, we have developed and trained a proprietary Time Series Transformer model specifically for the U.S. S&P 500 stocks.
 Since financial data is generally highly random and very noisy and non-stationary to begin with, there has been extensive research done with using deep learning based representation learning for forecasting accurate stock price predictions for any given stock. In the recent paper,  (Wen et al., 2023), researchers perform a case-study leveraging Time Series Transformers for forecasting the Bagladeshi stock market in Dhaka. To extend their study, we implemented and trained our very own Time Series Transformer for the US S&P 500 stocks.
 
