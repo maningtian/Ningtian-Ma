@@ -64,4 +64,4 @@ docker run --rm -it -p 5000:5000 --gpus all portfolia
 ```
 
 ## Start the Front-End
-Once the back-end server is up and running, feel free to launch the front-end client web application. Instructions can be found in our [portfolia-client](https://github.com/Jarhatz/portfolia-client) repository.
+Once the back-end server is up and running, please go on and launch the front-end client web application. Instructions can be found in our [portfolia-client](https://github.com/Jarhatz/portfolia-client) repository.
