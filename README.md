@@ -1,6 +1,6 @@
 # Portfolia - A Personalized Assistant for Financial Advising and Investment Management
 
-Many people get into the world of finance and investment management and are taken aback by the sheer number of details and key words that they need to learn about when dealing with investments and stocks. What are ETF's? What are dividends? How can I diversify my portfolio? A lot of these questions can be answered with Portfolia, a personalized investment advisor.
+The financial and investment landscape can be daunting for newcomers due to the vast array of terminology, concepts, and investment strategies. Financial literacy and effective investment management are crucial skills in today's economy, yet many individuals struggle to navigate the complex world of finance. The abundance of financial jargon, investment options, and market volatility can be overwhelming for novice and experienced investors alike. Traditional financial advisory services are often expensive and inaccessible to the average person, creating a significant barrier to entry for those seeking to improve their financial well-being. The integration of Large Language Models (LLMs) and Machine Learning (ML) in personal finance offers a promising solution to democratize financial advice and empower individuals to make informed investment decisions.
 
 ## Description
 
