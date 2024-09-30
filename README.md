@@ -11,7 +11,7 @@ Portfolia also provides a feature for forecasting any given stock with high cert
 ## Before Getting Started
 ### ***Note: This is the back-end repository. The front-end repository is [here](https://github.com/Jarhatz/portfolia-client).**
 
-In this repository, the folder `models` is too large for our Git LFS limit. Please click this [link](https://google.com/) to download a zip file of `models` which you can manually add to this cloned repository. **Note: There should be a total of 7 model checkpoint directories under `models/stockformer`.*
+In this repository, the folder `models` is too large for our Git LFS limit. Please click this [link](https://google.com/) to download a zip file of `models` which you can manually add to this cloned repository. **Note: There should be a total of 4 model checkpoint directories under `models/stockformer`.*
 
 The File Directory Structure of `models`:
 ```
@@ -21,9 +21,6 @@ The File Directory Structure of `models`:
 ┃   ┃   ┗ 📂 sp500-30d-final
 ┃   ┃   ┃   ┗ 📜 sp500-30d-final-config.pth
 ┃   ┃   ┃   ┗ 📜 sp500-30d-final-state.pth
-┃   ┃   ┗ 📂 sp500-60d-final
-┃   ┃   ┃   ┗ 📜 sp500-60d-final-config.pth
-┃   ┃   ┃   ┗ 📜 sp500-60d-final-state.pth
 ┃   ┃   ┗ 📂 sp500-90d-final
 ┃   ┃   ┃   ┗ 📜 sp500-90d-final-config.pth
 ┃   ┃   ┃   ┗ 📜 sp500-90d-final-state.pth
