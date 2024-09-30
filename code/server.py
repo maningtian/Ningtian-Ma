@@ -95,7 +95,7 @@ def chat():
         
         packet = packetify(output, packet)
         if packet['symbol'] != "None" and packet['action'] != "None" and isinstance(packet['forecast'], int):
-            prediction_length = min([30, 60, 90, 180, 360], key=lambda x: abs(x - packet['forecast']))
+            prediction_length = min([30, 90, 180, 360], key=lambda x: abs(x - packet['forecast']))
             try:
                 config = init_config(f"sp500-{prediction_length}d-final")
                 model = init_model(config, f"sp500-{prediction_length}d-final")
