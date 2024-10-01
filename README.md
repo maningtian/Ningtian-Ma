@@ -68,13 +68,13 @@ cd portfolia
 ```bash
 docker build -t portfolia .
 ```
-> **Note: This may take ~5 minutes to build*
+> *This may take ~5 minutes to build*
 
 3. Start a container and run a simple dependency test. The following command will run the test to make sure everything went well.
 ```bash
 docker run --rm -it --gpus all portfolia python3 code/run_test.py
 ```
-> You should see: `All imports successful. No dependency conflicts.`
+> _You should see:_ `All imports successful. No dependency conflicts.`
 
 4. Start the server in a container. It will be listening on port 5000 for any incoming HTTP API requests.
 ```bash
@@ -82,4 +82,4 @@ docker run --rm -it -p 5000:5000 --gpus all portfolia
 ```
 
 5. Start the Front-End
-> Once the back-end server is up and running, please go on and launch the front-end client web application. Instructions can be found in our [portfolia-client](https://github.com/Jarhatz/portfolia-client) repository.
+> _Once the back-end server is up and running, please go on and launch the front-end client web application. Instructions can be found in our_ [portfolia-client](https://github.com/Jarhatz/portfolia-client) _repository._
