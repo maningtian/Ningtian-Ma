@@ -57,19 +57,25 @@ The File Directory Structure of `models`:
 
 <a id="section-6"></a>
 ## Getting Started
-1) Build the docker image with the Dockerfile present in the root directory of this repository.
+
+1. Clone the repository
+```bash
+git clone https://github.com/Jarhatz/portfolia.git
+```
+
+2. Build the docker image with the Dockerfile present in the root directory of this repository.
 ```bash
 docker build -t portfolia .
 ```
 > **Note: This may take ~5 minutes to build*
 
-2) Start a container and run a simple dependency test. The following command will run the test to make sure everything went well.
+3. Start a container and run a simple dependency test. The following command will run the test to make sure everything went well.
 ```bash
 docker run --rm -it --gpus all portfolia python3 code/run_test.py
 ```
 > You should see: `All imports successful. No dependency conflicts.`
 
-3) Start the server in a container. It will be listening on port 5000 for any incoming HTTP API requests.
+4. Start the server in a container. It will be listening on port 5000 for any incoming HTTP API requests.
 ```bash
 docker run --rm -it -p 5000:5000 --gpus all portfolia
 ```
