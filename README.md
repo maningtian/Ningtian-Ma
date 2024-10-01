@@ -61,6 +61,7 @@ The File Directory Structure of `models`:
 1. Clone the repository
 ```bash
 git clone https://github.com/Jarhatz/portfolia.git
+cd portfolia
 ```
 
 2. Build the docker image with the Dockerfile present in the root directory of this repository.
