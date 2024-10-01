@@ -80,5 +80,5 @@ docker run --rm -it --gpus all portfolia python3 code/run_test.py
 docker run --rm -it -p 5000:5000 --gpus all portfolia
 ```
 
-## Start the Front-End
-Once the back-end server is up and running, please go on and launch the front-end client web application. Instructions can be found in our [portfolia-client](https://github.com/Jarhatz/portfolia-client) repository.
+5. Start the Front-End
+> Once the back-end server is up and running, please go on and launch the front-end client web application. Instructions can be found in our [portfolia-client](https://github.com/Jarhatz/portfolia-client) repository.
