@@ -34,7 +34,7 @@ To read more about our implementation, please navigate to `code/stockformer` or 
 
 <a id="section-5"></a>
 ## Before Getting Started
-In this repository, the folder `models` is too large for our Git LFS limit. Please click this [link](https://google.com/) to download a zip file of `models` which you can manually add to this cloned repository. **Note: There should be a total of 4 model checkpoint directories under `models/stockformer`.*
+In this repository, the folder `models` is too large for our Git LFS limit. Please click this [link](https://google.com/](https://drive.google.com/file/d/1J_6UM4u8MXd7lP7WsKGMOxt54CKai-0I/view?usp=sharing)) to download a zip file of `models` which you can manually add to this cloned repository. **Note: There should be a total of 4 model checkpoint directories under `models/stockformer`.*
 
 The File Directory Structure of `models`:
 ```
