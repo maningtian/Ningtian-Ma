@@ -6,6 +6,8 @@
 - [Stockformer](#section-3)
 - [Features](#section-4)
 - [Before Getting Started](#section-5)
+    - [Download our Pretrained Models](#section-5-1)
+    - [System Requirements](#section-5-2)
 - [Getting Started](#section-6)
 
 <a id="section-1"></a>
@@ -34,6 +36,9 @@ To read more about our implementation, please navigate to `code/stockformer` or 
 
 <a id="section-5"></a>
 ## Before Getting Started
+
+<a id="section-5-1"></a>
+### Download our Pretrained Models
 In this repository, the folder `models` is too large for our Git LFS limit. Please click this [link](https://google.com/](https://drive.google.com/file/d/1J_6UM4u8MXd7lP7WsKGMOxt54CKai-0I/view?usp=sharing)) to download a zip file of `models` which you can manually add to this cloned repository. **Note: There should be a total of 4 model checkpoint directories under* `models/stockformer`.
 
 The File Directory Structure of `models`:
@@ -55,8 +60,22 @@ The File Directory Structure of `models`:
 ┃   ┃   ┃   ┗ 📜 sp500-360d-final-state.pth
 ```
 
+<a id="section-5-2"></a>
+### System Requirements
+- **Linux Kernel/OS** (e.g. Ubuntu 22.04 LTS)
+- **NVIDIA AI Workbench** should be installed
+- **CUDA Device** Atleast 1 recognizable device (GPU)
+- **Git** should be installed for accessing remote repositories
+- **Docker** should be installed for container runtimes
+
 <a id="section-6"></a>
 ## Getting Started
+
+**This project was built with NVIDIA AI Workbench CLI.**
+
+We created a custom Docker image for our application's container runtime. _Due to unforeseen issues with NVIDIA AI Workbench's default container not recognizing CUDA devices on our local development host, we decided to build our own image with the proper CUDA Toolkit drivers for the container's runtime._
+
+Please follow the below steps to launch the application.
 
 1. Clone the repository
 ```bash
