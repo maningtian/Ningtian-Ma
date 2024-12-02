@@ -99,7 +99,10 @@ def fetch_yf_prices_for_inference(symbols, prediction_length, down_sample, end_d
         stock_df = yf.download(symbol, start=start_date, end=end_date)
         stock_df.reset_index(inplace=True)
         stock_df.insert(1, 'Symbol', symbol)
-        stock_dfs.append(stock_df.iloc[-prediction_length-context_length-1 :: prediction_length // down_sample].reset_index(drop=True))
+        df = stock_df.iloc[-prediction_length-context_length-1 :: prediction_length // down_sample].reset_index(drop=True)
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = df.columns.droplevel(1)
+        stock_dfs.append(df)
     return stock_dfs
 
 
@@ -185,8 +188,7 @@ def compute_differential(window):
     diff_window = window[window.columns.difference(['Date', 'Symbol'])].diff()
     diff_window.insert(0, 'Symbol', window['Symbol'])
     diff_window.insert(0, 'Date', window['Date'])
-    diff_window = diff_window.iloc[1:].reset_index(drop=True)
-    return diff_window
+    return diff_window.iloc[1:].reset_index(drop=True)
 
 
 def revert_preprocessing(original, prediction, future_dates):

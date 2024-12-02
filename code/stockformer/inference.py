@@ -21,6 +21,12 @@ def load_args():
         help="The stock trading symbol(s) for inference. Must be symbol(s) included in S&P500."
     )
     parser.add_argument(
+        "--prediction_length",
+        required=True,
+        type=int,
+        help="The prediction length for inferencing"
+    )
+    parser.add_argument(
         "--load_checkpoint",
         required=True,
         type=str,
@@ -71,7 +77,7 @@ def predict(symbols, model, config, prediction_length, down_sample, end_date=dat
     future_dates = pd.date_range(start=pd.Timestamp(end_date), periods=down_sample, freq=f'{prediction_length // down_sample}B')
 
     dataset = InferenceStockDataset(stock_dfs, config, future_dates, prediction_length // down_sample)
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=1, num_workers=2, shuffle=True)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=1, num_workers=1, shuffle=False)
 
     model.eval()
     forecasts = []
@@ -100,7 +106,7 @@ def main():
     config = init_config(args.load_checkpoint)
     model = init_model(config, args.load_checkpoint)
     
-    forecasts = predict(args.symbols, model, config)
+    forecasts = predict(args.symbols, model, config, args.prediction_length, min(args.prediction_length, 30))
 
     for i, forecast in enumerate(forecasts):
         print(args.symbols[i])
